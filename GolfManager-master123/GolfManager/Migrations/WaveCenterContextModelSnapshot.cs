@@ -285,7 +285,22 @@ namespace WaveCenter.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<double>("DuracaoMaxima")
+                        .HasColumnType("float");
+
+                    b.Property<double>("DuracaoMinima")
+                        .HasColumnType("float");
+
+                    b.Property<double>("HoraComecoDia")
+                        .HasColumnType("float");
+
+                    b.Property<double>("HoraFimDia")
+                        .HasColumnType("float");
+
                     b.Property<int>("IdCategoriaExperiencia")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdLocal")
                         .HasColumnType("int");
 
                     b.Property<int>("IdTipoExperiencia")
@@ -305,9 +320,14 @@ namespace WaveCenter.Migrations
                     b.Property<int>("NumeroMinimoPessoas")
                         .HasColumnType("int");
 
+                    b.Property<double>("PrecoHora")
+                        .HasColumnType("float");
+
                     b.HasKey("Id");
 
                     b.HasIndex("IdCategoriaExperiencia");
+
+                    b.HasIndex("IdLocal");
 
                     b.HasIndex("IdTipoExperiencia");
 
@@ -383,6 +403,23 @@ namespace WaveCenter.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Galeria");
+                });
+
+            modelBuilder.Entity("WaveCenter.Model.Local", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Locais");
                 });
 
             modelBuilder.Entity("WaveCenter.Model.TipoExperiencia", b =>
@@ -524,6 +561,12 @@ namespace WaveCenter.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("WaveCenter.Model.Local", "Local")
+                        .WithMany()
+                        .HasForeignKey("IdLocal")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("WaveCenter.Model.TipoExperiencia", "TipoExperiencia")
                         .WithMany()
                         .HasForeignKey("IdTipoExperiencia")
@@ -531,6 +574,8 @@ namespace WaveCenter.Migrations
                         .IsRequired();
 
                     b.Navigation("CategoriaExperiencia");
+
+                    b.Navigation("Local");
 
                     b.Navigation("TipoExperiencia");
                 });

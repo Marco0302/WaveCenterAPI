@@ -3,6 +3,7 @@ using WaveCenter.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WaveCenter.Controllers
 {
@@ -41,6 +42,7 @@ namespace WaveCenter.Controllers
         }
 
         [HttpGet("{username}")]
+        [Authorize]
         public async Task<ActionResult<User>> GetUser(string username)
         {
             IdentityUser user = await _userManager.FindByNameAsync(username);
@@ -66,7 +68,7 @@ namespace WaveCenter.Controllers
                 return BadRequest("Bad credentials");
             }
 
-            var user = await _userManager.FindByNameAsync(request.Email);
+            var user = await _userManager.FindByEmailAsync(request.Email);
 
             if (user == null)
             {

@@ -33,6 +33,8 @@ public partial class WaveCenterContext : IdentityUserContext<IdentityUser>
     public virtual DbSet<CategoriaExperiencia> CategoriaExperiencias { get; set; }
     public virtual DbSet<Experiencia> Experiencias { get; set; }
 
+    public virtual DbSet<Local> Locais { get; set; }
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -72,6 +74,10 @@ public partial class WaveCenterContext : IdentityUserContext<IdentityUser>
             entity.HasOne(p => p.TipoExperiencia)
                 .WithMany()
                 .HasForeignKey(p => p.IdTipoExperiencia);
+
+            entity.HasOne(p => p.Local)
+                .WithMany()
+                .HasForeignKey(p => p.IdLocal);
         });
 
         //modelBuilder.Entity<Player>(entity =>
