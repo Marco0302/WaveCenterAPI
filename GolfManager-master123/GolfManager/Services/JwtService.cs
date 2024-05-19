@@ -11,7 +11,7 @@ namespace WaveCenter.Services
 {
     public class JwtService
     {
-        private const int EXPIRATION_MINUTES = 60;
+        private const int EXPIRATION_MINUTES = 600;
 
         private readonly IConfiguration _configuration;
 

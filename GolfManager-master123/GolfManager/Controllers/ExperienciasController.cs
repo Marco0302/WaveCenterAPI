@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WaveCenter.Model;
+using WaveCenter.ModelsAPI;
 
 namespace WaveCenter.Controllers
 {
@@ -81,13 +82,32 @@ namespace WaveCenter.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Experiencia>> PostExperiencia(Experiencia experiencia)
+        public async Task<ActionResult<Experiencia>> PostExperiencia(InsertExperiencia experiencia)
         {
             if (_context.Experiencias == null)
             {
                 return Problem("Entity set 'Experiencias'  is null.");
             }
-            _context.Experiencias.Add(experiencia);
+
+            _context.Experiencias.Add(new Experiencia()
+            {
+                Nome = experiencia.Nome,
+                Descricao = experiencia.Descricao,
+                Data = experiencia.Data,
+                IdLocal = experiencia.IdLocal,
+                Imagem = experiencia.Imagem,
+                NumeroMaximoPessoas = experiencia.NumeroMaximoPessoas,
+                NumeroMinimoPessoas = experiencia.NumeroMinimoPessoas,
+                DuracaoMaxima = experiencia.DuracaoMaxima,
+                DuracaoMinima = experiencia.DuracaoMinima,
+                HoraComecoDia = experiencia.HoraComecoDia,
+                HoraFimDia = experiencia.HoraFimDia,
+                IdTipoExperiencia = experiencia.IdTipoExperiencia,
+                PrecoHora = experiencia.PrecoHora,
+                IdCategoriaExperiencia = experiencia.IdCategoriaExperiencia,
+                Ativo = experiencia.Ativo
+            });
+
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetExperiencia", new { id = experiencia.Id }, experiencia);

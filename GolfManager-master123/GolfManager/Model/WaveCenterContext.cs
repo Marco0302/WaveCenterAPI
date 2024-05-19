@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace WaveCenter.Model;
 
-public partial class WaveCenterContext : IdentityUserContext<IdentityUser>
+public partial class WaveCenterContext : IdentityUserContext<User>
 {
     public WaveCenterContext()
     {
@@ -15,11 +15,15 @@ public partial class WaveCenterContext : IdentityUserContext<IdentityUser>
     public WaveCenterContext(DbContextOptions<WaveCenterContext> options): base(options)
     {
     }
+<<<<<<< Updated upstream
     public virtual DbSet<Media> Galeria { get; set; }
     public virtual DbSet<Cliente> Clientes { get; set; }
 
     public virtual DbSet<TipoFuncionario> TipoFuncionarios { get; set; }
     public virtual DbSet<Funcionario> Funcionarios { get; set; }
+=======
+    public virtual DbSet<Galeria> Galeria { get; set; }
+>>>>>>> Stashed changes
 
 
     public virtual DbSet<Voucher> Vouchers { get; set; }
@@ -34,6 +38,8 @@ public partial class WaveCenterContext : IdentityUserContext<IdentityUser>
     public virtual DbSet<Experiencia> Experiencias { get; set; }
 
     public virtual DbSet<Local> Locais { get; set; }
+    public virtual DbSet<Marcacao> Marcacoes {  get; set; }
+    public virtual DbSet<ClientesMarcacao> ClientesMarcacoes { get; set; }
 
     public virtual DbSet<PedidoReparacao> PedidoReparacao { get; set; }
 
@@ -42,6 +48,7 @@ public partial class WaveCenterContext : IdentityUserContext<IdentityUser>
     {
         base.OnModelCreating(modelBuilder);
 
+<<<<<<< Updated upstream
 
         modelBuilder.Entity<Funcionario>(entity =>
         {
@@ -60,6 +67,8 @@ public partial class WaveCenterContext : IdentityUserContext<IdentityUser>
                 .HasForeignKey(p => p.IdAvatar);
         });
 
+=======
+>>>>>>> Stashed changes
         modelBuilder.Entity<Equipamento>(entity =>
         {
             entity.HasOne(p => p.CategoriaEquipamento)
@@ -82,6 +91,7 @@ public partial class WaveCenterContext : IdentityUserContext<IdentityUser>
                 .HasForeignKey(p => p.IdLocal);
         });
 
+<<<<<<< Updated upstream
         modelBuilder.Entity<PedidoReparacao>(entity =>
         {
             entity.HasOne(p => p.Equipamento)
@@ -92,6 +102,17 @@ public partial class WaveCenterContext : IdentityUserContext<IdentityUser>
                 .HasForeignKey(p => p.IdFuncionario);
         });
 
+=======
+        modelBuilder.Entity<Marcacao>(entity =>
+        {
+            entity.HasOne(e => e.Experiencia)
+                .WithMany()
+                .HasForeignKey(e => e.IdExperiencia) 
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+
+>>>>>>> Stashed changes
         //modelBuilder.Entity<Player>(entity =>
         //{
         //    entity.HasKey(e => e.Idplayer);

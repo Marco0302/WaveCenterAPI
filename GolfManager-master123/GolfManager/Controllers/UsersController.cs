@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using WaveCenter.ModelsAPI;
 
 namespace WaveCenter.Controllers
 {
@@ -11,17 +12,17 @@ namespace WaveCenter.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<User> _userManager;
         private readonly JwtService _jwtService;
 
-        public UsersController(UserManager<IdentityUser> userManager, JwtService jwtService)
+        public UsersController(UserManager<User> userManager, JwtService jwtService)
         {
             _userManager = userManager;
             _jwtService = jwtService;
         }
 
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
+        public async Task<ActionResult<SimpleUser>> PostUser(SimpleUser user)
         {
             if (!ModelState.IsValid)
             {
@@ -29,7 +30,7 @@ namespace WaveCenter.Controllers
             }
 
             var result = await _userManager.CreateAsync(
-                new IdentityUser() { UserName = user.UserName, Email = user.Email }, user.Password
+                new User() { UserName = user.UserName, Email = user.Email }, user.Password
             );
 
             if (!result.Succeeded)
@@ -43,9 +44,28 @@ namespace WaveCenter.Controllers
 
         [HttpGet("{username}")]
         [Authorize]
-        public async Task<ActionResult<User>> GetUser(string username)
+        public async Task<ActionResult<User>> GetUserByName(string username)
         {
-            IdentityUser user = await _userManager.FindByNameAsync(username);
+            User user = await _userManager.FindByNameAsync(username);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return new User
+            {
+                UserName = user.UserName,
+                Email = user.Email
+            };
+        }
+
+        // GET: api/Users/email
+        [HttpGet("/api/Users/email/{email}")]
+        [Authorize]
+        public async Task<ActionResult<User>> GetUserByEmail(string email)
+        {
+            User user = await _userManager.FindByEmailAsync(email);
 
             if (user == null)
             {

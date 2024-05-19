@@ -17,51 +17,61 @@ using Microsoft.OpenApi.Models;
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "WaveCenter API", Version = "v1" });
-    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
-        Name = "Authorization",
-        In = ParameterLocation.Header,
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer"
-    });
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement()
-    {
+        c.SwaggerDoc("v1", new OpenApiInfo { Title = "WaveCenter API", Version = "v1" });
+
+        var securityScheme = new OpenApiSecurityScheme
         {
-            new OpenApiSecurityScheme
+            Name = "Authorization",
+            Description = "Enter 'Bearer' [space] and then your valid token in the text input below.",
+            In = ParameterLocation.Header,
+            Type = SecuritySchemeType.ApiKey,
+            Scheme = "Bearer"
+        };
+
+        c.AddSecurityDefinition("Bearer", securityScheme);
+
+        var securityRequirement = new OpenApiSecurityRequirement
+        {
             {
-                Reference = new OpenApiReference
+                new OpenApiSecurityScheme
                 {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    },
+                    Scheme = "oauth2",
+                    Name = "Bearer",
+                    In = ParameterLocation.Header
                 },
-                Scheme = "oauth2",
-                Name = "Bearer",
-                In = ParameterLocation.Header,
+                new List<string>()
+            }
+        };
 
-            },
-            new List<string>()
-        }
+        c.AddSecurityRequirement(securityRequirement);
     });
-});
 
+<<<<<<< Updated upstream
     builder.Services.AddDbContext<WaveCenterContext>(
         options => options.UseSqlServer("Server=localhost\\MSSQLSERVER03;Initial Catalog=WaveCenter;Integrated Security=True;TrustServerCertificate=True;"));
+=======
+builder.Services.AddDbContext<WaveCenterContext>(
+        options => options.UseSqlServer("Server=DLJYFFHR3\\SQLEXPRESS;User Id=LocalUserDB;password=1234;Initial Catalog=WaveCenter;Integrated Security=True;TrustServerCertificate=True;"));
+>>>>>>> Stashed changes
 
     builder.Services.AddScoped<JwtService>();
 
-    builder.Services.AddIdentityCore<IdentityUser>(options =>
+    builder.Services.AddIdentityCore<User>(options =>
     {
         options.SignIn.RequireConfirmedAccount = false;
         options.User.RequireUniqueEmail = true;
         options.Password.RequireDigit = false;
-        options.Password.RequiredLength = 6;
+        options.Password.RequiredLength = 3;
         options.Password.RequireNonAlphanumeric = false;
         options.Password.RequireUppercase = false;
         options.Password.RequireLowercase = false;
-    }).AddEntityFrameworkStores<WaveCenterContext>(); ;
+    }).AddEntityFrameworkStores<WaveCenterContext>(); 
 
     builder.Services
         .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -79,7 +89,29 @@ using Microsoft.OpenApi.Models;
                     Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])
                 )
             };
+            options.Events = new JwtBearerEvents
+            {
+                OnAuthenticationFailed = context =>
+                {
+                    var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+                    logger.LogError("Authentication failed: {Exception}", context.Exception);
+                    return Task.CompletedTask;
+                },
+                OnTokenValidated = context =>
+                {
+                    var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+                    logger.LogInformation("Token validated successfully.");
+                    return Task.CompletedTask;
+                },
+                OnChallenge = context =>
+                {
+                    var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+                    logger.LogWarning("Token validation challenge: {ErrorDescription}", context.ErrorDescription);
+                    return Task.CompletedTask;
+                }
+            };
         });
+
 
     var app = builder.Build();
 
@@ -92,11 +124,12 @@ using Microsoft.OpenApi.Models;
 
     app.UseHttpsRedirection();
 
+    app.UseAuthentication();
+
     app.UseAuthorization();
 
     app.MapControllers();
 
     app.Run();
 
-    app.UseAuthentication();
 
