@@ -28,7 +28,7 @@ namespace WaveCenter.Controllers
                 return NotFound();
             }
 
-            var pedidosReparacao = await _context.PedidoReparacao.Include(x => x.Equipamento).Include(x => x.Funcionario).ToListAsync();
+            var pedidosReparacao = await _context.PedidoReparacao.Include(x => x.Equipamento).Include(x => x.User).ToListAsync();
 
             return Ok(pedidosReparacao);
         }
@@ -40,7 +40,7 @@ namespace WaveCenter.Controllers
             {
                 return NotFound();
             }
-            var pedidoReparacao = await _context.PedidoReparacao.Include(x => x.Equipamento).Include(x => x.Funcionario).FirstOrDefaultAsync(x => x.Id == id);
+            var pedidoReparacao = await _context.PedidoReparacao.Include(x => x.Equipamento).Include(x => x.User).FirstOrDefaultAsync(x => x.Id == id);
 
             if (pedidoReparacao == null)
             {

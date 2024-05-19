@@ -15,16 +15,7 @@ public partial class WaveCenterContext : IdentityUserContext<User>
     public WaveCenterContext(DbContextOptions<WaveCenterContext> options): base(options)
     {
     }
-<<<<<<< Updated upstream
-    public virtual DbSet<Media> Galeria { get; set; }
-    public virtual DbSet<Cliente> Clientes { get; set; }
-
-    public virtual DbSet<TipoFuncionario> TipoFuncionarios { get; set; }
-    public virtual DbSet<Funcionario> Funcionarios { get; set; }
-=======
-    public virtual DbSet<Galeria> Galeria { get; set; }
->>>>>>> Stashed changes
-
+    public virtual DbSet<Media> Medias { get; set; }
 
     public virtual DbSet<Voucher> Vouchers { get; set; }
 
@@ -42,33 +33,24 @@ public partial class WaveCenterContext : IdentityUserContext<User>
     public virtual DbSet<ClientesMarcacao> ClientesMarcacoes { get; set; }
 
     public virtual DbSet<PedidoReparacao> PedidoReparacao { get; set; }
-
+    public virtual DbSet<TipoUser> TipoUsers { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
-<<<<<<< Updated upstream
-
-        modelBuilder.Entity<Funcionario>(entity =>
+        modelBuilder.Entity<User>(entity =>
         {
-            entity.HasOne(p => p.TipoFuncionario)
+            entity.HasOne(p => p.TipoUser)
                 .WithMany()
-                .HasForeignKey(p => p.IdTipoFuncionario);
+                .HasForeignKey(p => p.IdTipoUser);
+
             entity.HasOne(p => p.Media)
                 .WithMany()
                 .HasForeignKey(p => p.IdMedia);
         });
 
-        modelBuilder.Entity<Cliente>(entity =>
-        {
-            entity.HasOne(p => p.Galeria)
-                .WithMany()
-                .HasForeignKey(p => p.IdAvatar);
-        });
 
-=======
->>>>>>> Stashed changes
         modelBuilder.Entity<Equipamento>(entity =>
         {
             entity.HasOne(p => p.CategoriaEquipamento)
@@ -91,58 +73,25 @@ public partial class WaveCenterContext : IdentityUserContext<User>
                 .HasForeignKey(p => p.IdLocal);
         });
 
-<<<<<<< Updated upstream
         modelBuilder.Entity<PedidoReparacao>(entity =>
         {
             entity.HasOne(p => p.Equipamento)
                 .WithMany()
                 .HasForeignKey(p => p.IdEquipamento);
-            entity.HasOne(p => p.Funcionario)
+            entity.HasOne(p => p.User)
                 .WithMany()
-                .HasForeignKey(p => p.IdFuncionario);
+                .HasForeignKey(p => p.UserId);
         });
 
-=======
         modelBuilder.Entity<Marcacao>(entity =>
         {
             entity.HasOne(e => e.Experiencia)
                 .WithMany()
-                .HasForeignKey(e => e.IdExperiencia) 
-                .OnDelete(DeleteBehavior.Cascade);
+                .HasForeignKey(e => e.IdExperiencia);
         });
 
 
->>>>>>> Stashed changes
-        //modelBuilder.Entity<Player>(entity =>
-        //{
-        //    entity.HasKey(e => e.Idplayer);
 
-        //    entity.Property(e => e.Idplayer)
-        //        .HasDefaultValueSql("(newid())")
-        //        .HasColumnName("IDPlayer");
-        //    entity.Property(e => e.Address).HasMaxLength(50);
-        //    entity.Property(e => e.Birthdate).HasColumnType("date");
-        //    entity.Property(e => e.Name).HasMaxLength(50);
-        //});
-
-        //modelBuilder.Entity<PlayersClub>(entity =>
-        //{
-        //    entity.HasNoKey();
-
-        //    entity.Property(e => e.Idclub).HasColumnName("IDClub");
-        //    entity.Property(e => e.Idplayer).HasColumnName("IDPlayer");
-        //    entity.Property(e => e.SubscriptionDate).HasColumnType("date");
-
-        //    entity.HasOne(d => d.IdclubNavigation).WithMany()
-        //        .HasForeignKey(d => d.Idclub)
-        //        .OnDelete(DeleteBehavior.ClientSetNull)
-        //        .HasConstraintName("FK_PlayersClubs_Clubs");
-
-        //    entity.HasOne(d => d.IdplayerNavigation).WithMany()
-        //        .HasForeignKey(d => d.Idplayer)
-        //        .OnDelete(DeleteBehavior.ClientSetNull)
-        //        .HasConstraintName("FK_PlayersClubs_Players");
-        //});
 
         OnModelCreatingPartial(modelBuilder);
     }
