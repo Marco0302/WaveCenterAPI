@@ -15,7 +15,7 @@ public partial class WaveCenterContext : IdentityUserContext<IdentityUser>
     public WaveCenterContext(DbContextOptions<WaveCenterContext> options): base(options)
     {
     }
-    public virtual DbSet<Galeria> Galeria { get; set; }
+    public virtual DbSet<Media> Galeria { get; set; }
     public virtual DbSet<Cliente> Clientes { get; set; }
 
     public virtual DbSet<TipoFuncionario> TipoFuncionarios { get; set; }
@@ -35,6 +35,8 @@ public partial class WaveCenterContext : IdentityUserContext<IdentityUser>
 
     public virtual DbSet<Local> Locais { get; set; }
 
+    public virtual DbSet<PedidoReparacao> PedidoReparacao { get; set; }
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -46,9 +48,9 @@ public partial class WaveCenterContext : IdentityUserContext<IdentityUser>
             entity.HasOne(p => p.TipoFuncionario)
                 .WithMany()
                 .HasForeignKey(p => p.IdTipoFuncionario);
-                //entity.HasOne(p => p.Galeria)
-                //    .WithMany()
-                //    .HasForeignKey(p => p.IdGaleria);
+            entity.HasOne(p => p.Media)
+                .WithMany()
+                .HasForeignKey(p => p.IdMedia);
         });
 
         modelBuilder.Entity<Cliente>(entity =>
@@ -78,6 +80,16 @@ public partial class WaveCenterContext : IdentityUserContext<IdentityUser>
             entity.HasOne(p => p.Local)
                 .WithMany()
                 .HasForeignKey(p => p.IdLocal);
+        });
+
+        modelBuilder.Entity<PedidoReparacao>(entity =>
+        {
+            entity.HasOne(p => p.Equipamento)
+                .WithMany()
+                .HasForeignKey(p => p.IdEquipamento);
+            entity.HasOne(p => p.Funcionario)
+                .WithMany()
+                .HasForeignKey(p => p.IdFuncionario);
         });
 
         //modelBuilder.Entity<Player>(entity =>

@@ -29,7 +29,7 @@ namespace WaveCenter.Controllers
                 return NotFound();
             }
 
-            var experiencias = await _context.Experiencias.Include(x => x.CategoriaExperiencia).Include(x => x.TipoExperiencia).ToListAsync();
+            var experiencias = await _context.Experiencias.Include(x => x.Local).Include(x => x.CategoriaExperiencia).Include(x => x.TipoExperiencia).ToListAsync();
 
             return Ok(experiencias);
         }
@@ -41,7 +41,7 @@ namespace WaveCenter.Controllers
             {
                 return NotFound();
             }
-            var experiencia = await _context.Experiencias.Include(x => x.CategoriaExperiencia).Include(x => x.TipoExperiencia).FirstOrDefaultAsync(x => x.Id == id);
+            var experiencia = await _context.Experiencias.Include(x => x.Local).Include(x => x.CategoriaExperiencia).Include(x => x.TipoExperiencia).FirstOrDefaultAsync(x => x.Id == id);
 
             if (experiencia == null)
             {

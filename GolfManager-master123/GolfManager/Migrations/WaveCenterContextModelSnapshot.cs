@@ -351,6 +351,9 @@ namespace WaveCenter.Migrations
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("IdMedia")
+                        .HasColumnType("int");
+
                     b.Property<int>("IdTipoFuncionario")
                         .HasColumnType("int");
 
@@ -371,12 +374,35 @@ namespace WaveCenter.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("IdMedia");
+
                     b.HasIndex("IdTipoFuncionario");
 
                     b.ToTable("Funcionarios");
                 });
 
-            modelBuilder.Entity("WaveCenter.Model.Galeria", b =>
+            modelBuilder.Entity("WaveCenter.Model.Local", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Coordenadas")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Locais");
+                });
+
+            modelBuilder.Entity("WaveCenter.Model.Media", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -405,7 +431,7 @@ namespace WaveCenter.Migrations
                     b.ToTable("Galeria");
                 });
 
-            modelBuilder.Entity("WaveCenter.Model.Local", b =>
+            modelBuilder.Entity("WaveCenter.Model.PedidoReparacao", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -413,13 +439,32 @@ namespace WaveCenter.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Name")
+                    b.Property<DateTime?>("DataConclusao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DataPedido")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Estado")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("IdEquipamento")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdFuncionario")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Notas")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Locais");
+                    b.HasIndex("IdEquipamento");
+
+                    b.HasIndex("IdFuncionario");
+
+                    b.ToTable("PedidoReparacao");
                 });
 
             modelBuilder.Entity("WaveCenter.Model.TipoExperiencia", b =>
@@ -535,7 +580,7 @@ namespace WaveCenter.Migrations
 
             modelBuilder.Entity("WaveCenter.Model.Cliente", b =>
                 {
-                    b.HasOne("WaveCenter.Model.Galeria", "Galeria")
+                    b.HasOne("WaveCenter.Model.Media", "Galeria")
                         .WithMany()
                         .HasForeignKey("IdAvatar");
 
@@ -582,13 +627,40 @@ namespace WaveCenter.Migrations
 
             modelBuilder.Entity("WaveCenter.Model.Funcionario", b =>
                 {
+                    b.HasOne("WaveCenter.Model.Media", "Media")
+                        .WithMany()
+                        .HasForeignKey("IdMedia")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("WaveCenter.Model.TipoFuncionario", "TipoFuncionario")
                         .WithMany()
                         .HasForeignKey("IdTipoFuncionario")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Media");
+
                     b.Navigation("TipoFuncionario");
+                });
+
+            modelBuilder.Entity("WaveCenter.Model.PedidoReparacao", b =>
+                {
+                    b.HasOne("WaveCenter.Model.Equipamento", "Equipamento")
+                        .WithMany()
+                        .HasForeignKey("IdEquipamento")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WaveCenter.Model.Funcionario", "Funcionario")
+                        .WithMany()
+                        .HasForeignKey("IdFuncionario")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Equipamento");
+
+                    b.Navigation("Funcionario");
                 });
 #pragma warning restore 612, 618
         }

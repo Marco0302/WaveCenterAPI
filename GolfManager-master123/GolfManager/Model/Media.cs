@@ -1,6 +1,6 @@
 ﻿namespace WaveCenter.Model;
 
-public partial class Galeria
+public partial class Media
 {
     public int Id { get; set; }
     public string Nome { get; set; } = string.Empty;

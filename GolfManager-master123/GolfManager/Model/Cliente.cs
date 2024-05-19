@@ -10,7 +10,7 @@ public partial class Cliente
     public string Email { get; set; } = string.Empty;
     public string Password { get; set; } = string.Empty;
     public int NIF { get; set; }
-    public Galeria? Galeria { get; set; }
+    public Media? Galeria { get; set; }
     public int? IdAvatar { get; set; }
     public bool Ativo { get; set; }
 

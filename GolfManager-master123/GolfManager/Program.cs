@@ -48,7 +48,7 @@ using Microsoft.OpenApi.Models;
 });
 
     builder.Services.AddDbContext<WaveCenterContext>(
-        options => options.UseSqlServer("Server=DLJYFFHR3\\SQLEXPRESS;User Id=LocalUserDB;password=1234;Initial Catalog=WaveCenter;Integrated Security=True;TrustServerCertificate=True;"));
+        options => options.UseSqlServer("Server=localhost\\MSSQLSERVER03;Initial Catalog=WaveCenter;Integrated Security=True;TrustServerCertificate=True;"));
 
     builder.Services.AddScoped<JwtService>();
 

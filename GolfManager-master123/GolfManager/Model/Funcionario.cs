@@ -13,6 +13,8 @@ public partial class Funcionario
     public bool Verificado { get; set; }
     public int IdTipoFuncionario { get; set; }
     public TipoFuncionario? TipoFuncionario { get; set; }
+    public int IdMedia { get; set; }
+    public Media? Media { get; set; }
 }
 
 

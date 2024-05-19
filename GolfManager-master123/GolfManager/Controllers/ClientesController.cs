@@ -22,7 +22,7 @@ namespace WaveCenter.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        //[Authorize]
         public async Task<ActionResult<IEnumerable<Cliente>>> GetClientes()
         {
             if (_context.Clientes == null)

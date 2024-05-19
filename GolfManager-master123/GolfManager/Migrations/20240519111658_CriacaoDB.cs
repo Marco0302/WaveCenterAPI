@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace WaveCenter.Migrations
 {
     /// <inheritdoc />
-    public partial class CriacaoBaseDados : Migration
+    public partial class CriacaoDB : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -50,6 +50,19 @@ namespace WaveCenter.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "CategoriaExperiencias",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Designacao = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CategoriaExperiencias", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Galeria",
                 columns: table => new
                 {
@@ -63,6 +76,32 @@ namespace WaveCenter.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Galeria", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Locais",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Locais", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TipoExperiencias",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Designacao = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TipoExperiencias", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -213,6 +252,51 @@ namespace WaveCenter.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Experiencias",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Nome = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Descricao = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Data = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IdLocal = table.Column<int>(type: "int", nullable: false),
+                    Imagem = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    NumeroMinimoPessoas = table.Column<int>(type: "int", nullable: false),
+                    NumeroMaximoPessoas = table.Column<int>(type: "int", nullable: false),
+                    DuracaoMinima = table.Column<double>(type: "float", nullable: false),
+                    DuracaoMaxima = table.Column<double>(type: "float", nullable: false),
+                    HoraComecoDia = table.Column<double>(type: "float", nullable: false),
+                    HoraFimDia = table.Column<double>(type: "float", nullable: false),
+                    IdTipoExperiencia = table.Column<int>(type: "int", nullable: false),
+                    PrecoHora = table.Column<double>(type: "float", nullable: false),
+                    IdCategoriaExperiencia = table.Column<int>(type: "int", nullable: false),
+                    Ativo = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Experiencias", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Experiencias_CategoriaExperiencias_IdCategoriaExperiencia",
+                        column: x => x.IdCategoriaExperiencia,
+                        principalTable: "CategoriaExperiencias",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Experiencias_Locais_IdLocal",
+                        column: x => x.IdLocal,
+                        principalTable: "Locais",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Experiencias_TipoExperiencias_IdTipoExperiencia",
+                        column: x => x.IdTipoExperiencia,
+                        principalTable: "TipoExperiencias",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Funcionarios",
                 columns: table => new
                 {
@@ -226,15 +310,52 @@ namespace WaveCenter.Migrations
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Nif = table.Column<int>(type: "int", nullable: false),
                     Verificado = table.Column<bool>(type: "bit", nullable: false),
-                    IdTipoFuncionario = table.Column<int>(type: "int", nullable: false)
+                    IdTipoFuncionario = table.Column<int>(type: "int", nullable: false),
+                    IdMedia = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Funcionarios", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_Funcionarios_Galeria_IdMedia",
+                        column: x => x.IdMedia,
+                        principalTable: "Galeria",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "FK_Funcionarios_TipoFuncionarios_IdTipoFuncionario",
                         column: x => x.IdTipoFuncionario,
                         principalTable: "TipoFuncionarios",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PedidoReparacao",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    IdEquipamento = table.Column<int>(type: "int", nullable: false),
+                    IdFuncionario = table.Column<int>(type: "int", nullable: false),
+                    Notas = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DataPedido = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DataConclusao = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Estado = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PedidoReparacao", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PedidoReparacao_Equipamentos_IdEquipamento",
+                        column: x => x.IdEquipamento,
+                        principalTable: "Equipamentos",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PedidoReparacao_Funcionarios_IdFuncionario",
+                        column: x => x.IdFuncionario,
+                        principalTable: "Funcionarios",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -272,9 +393,39 @@ namespace WaveCenter.Migrations
                 column: "IdCategoriaEquipamento");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Experiencias_IdCategoriaExperiencia",
+                table: "Experiencias",
+                column: "IdCategoriaExperiencia");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Experiencias_IdLocal",
+                table: "Experiencias",
+                column: "IdLocal");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Experiencias_IdTipoExperiencia",
+                table: "Experiencias",
+                column: "IdTipoExperiencia");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Funcionarios_IdMedia",
+                table: "Funcionarios",
+                column: "IdMedia");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Funcionarios_IdTipoFuncionario",
                 table: "Funcionarios",
                 column: "IdTipoFuncionario");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PedidoReparacao_IdEquipamento",
+                table: "PedidoReparacao",
+                column: "IdEquipamento");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PedidoReparacao_IdFuncionario",
+                table: "PedidoReparacao",
+                column: "IdFuncionario");
         }
 
         /// <inheritdoc />
@@ -293,10 +444,10 @@ namespace WaveCenter.Migrations
                 name: "Clientes");
 
             migrationBuilder.DropTable(
-                name: "Equipamentos");
+                name: "Experiencias");
 
             migrationBuilder.DropTable(
-                name: "Funcionarios");
+                name: "PedidoReparacao");
 
             migrationBuilder.DropTable(
                 name: "Vouchers");
@@ -305,10 +456,25 @@ namespace WaveCenter.Migrations
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "Galeria");
+                name: "CategoriaExperiencias");
+
+            migrationBuilder.DropTable(
+                name: "Locais");
+
+            migrationBuilder.DropTable(
+                name: "TipoExperiencias");
+
+            migrationBuilder.DropTable(
+                name: "Equipamentos");
+
+            migrationBuilder.DropTable(
+                name: "Funcionarios");
 
             migrationBuilder.DropTable(
                 name: "CategoriaEquipamentos");
+
+            migrationBuilder.DropTable(
+                name: "Galeria");
 
             migrationBuilder.DropTable(
                 name: "TipoFuncionarios");
