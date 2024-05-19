@@ -93,7 +93,7 @@ namespace WaveCenter.Controllers
         {
             if (_context.Vouchers == null)
             {
-                return Problem("Entity set 'GolfClubContext.Clubs'  is null.");
+                return Problem("Entity is null.");
             }
             _context.Vouchers.Add(voucher);
             await _context.SaveChangesAsync();

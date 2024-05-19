@@ -86,7 +86,7 @@ namespace WaveCenter.Controllers
         {
             if (_context.Experiencias == null)
             {
-                return Problem("Entity set 'Experiencias'  is null.");
+                return Problem("Entity is null.");
             }
 
             _context.Experiencias.Add(new Experiencia()

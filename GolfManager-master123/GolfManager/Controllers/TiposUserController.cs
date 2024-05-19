@@ -11,54 +11,54 @@ namespace WaveCenter.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class LocaisExperienciasController : ControllerBase
+    public class TiposUserController : ControllerBase
     {
         private readonly WaveCenterContext _context;
 
-        public LocaisExperienciasController(WaveCenterContext context)
+        public TiposUserController(WaveCenterContext context)
         {
             _context = context;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Local>>> GetLocalExperiencias()
+        public async Task<ActionResult<IEnumerable<TipoUser>>> GetTipoUsers()
         {
-            if (_context.Locais == null)
+            if (_context.TipoUsers == null)
             {
                 return NotFound();
             }
 
-            var locaisExperiencia = await _context.Locais.ToListAsync();
-            return Ok(locaisExperiencia);
+            var tiposUser = await _context.TipoUsers.ToListAsync();
+            return Ok(tiposUser);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Local>> GetLocalExperiencia(int id)
+        public async Task<ActionResult<TipoUser>> GetTipoUser(int id)
         {
-            if (_context.Locais == null)
+            if (_context.TipoUsers == null)
             {
                 return NotFound();
             }
 
-            var localExperiencia = await _context.Locais.FindAsync(id);
+            var tipoUser = await _context.TipoUsers.FindAsync(id);
 
-            if (localExperiencia == null)
+            if (tipoUser == null)
             {
                 return NotFound();
             }
 
-            return localExperiencia;
+            return tipoUser;
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutLocalExperiencia(int id, Local localExperiencia)
+        public async Task<IActionResult> PutTipoUser(int id, TipoUser tipoUser)
         {
-            if (id != localExperiencia.Id)
+            if (id != tipoUser.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(localExperiencia).State = EntityState.Modified;
+            _context.Entry(tipoUser).State = EntityState.Modified;
 
             try
             {
@@ -66,7 +66,7 @@ namespace WaveCenter.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!LocalExperienciaExists(id))
+                if (!TipoUserExists(id))
                 {
                     return NotFound();
                 }
@@ -80,41 +80,41 @@ namespace WaveCenter.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Local>> PostLocalExperiencia(Local localExperiencia)
+        public async Task<ActionResult<TipoUser>> PostTipoUser(TipoUser tipoUser)
         {
-            if (_context.Locais == null)
+            if (_context.TipoUsers == null)
             {
                 return Problem("Entity is null.");
             }
-            _context.Locais.Add(localExperiencia);
+            _context.TipoUsers.Add(tipoUser);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetLocalExperiencia", new { id = localExperiencia.Id }, localExperiencia);
+            return CreatedAtAction("GetTipoUser", new { id = tipoUser.Id }, tipoUser);
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteLocalExperiencia(int id)
+        public async Task<IActionResult> DeleteTipoUser(int id)
         {
-            if (_context.Locais == null)
+            if (_context.TipoUsers == null)
             {
                 return NotFound();
             }
 
-            var localExperiencia = await _context.Locais.FindAsync(id);
-            if (localExperiencia == null)
+            var tipoUser = await _context.TipoUsers.FindAsync(id);
+            if (tipoUser == null)
             {
                 return NotFound();
             }
 
-            _context.Locais.Remove(localExperiencia);
+            _context.TipoUsers.Remove(tipoUser);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool LocalExperienciaExists(int id)
+        private bool TipoUserExists(int id)
         {
-            return (_context.Locais?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.TipoUsers?.Any(e => e.Id == id)).GetValueOrDefault();
         }
 
     }

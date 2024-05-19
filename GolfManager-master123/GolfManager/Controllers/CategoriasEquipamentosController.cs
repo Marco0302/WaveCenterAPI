@@ -84,7 +84,7 @@ namespace WaveCenter.Controllers
         {
             if (_context.CategoriaEquipamentos == null)
             {
-                return Problem("Entity set 'CategoriaEquipamento'  is null.");
+                return Problem("Entity is null.");
             }
             _context.CategoriaEquipamentos.Add(categoriaEquipamento);
             await _context.SaveChangesAsync();
