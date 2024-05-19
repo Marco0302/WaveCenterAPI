@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using WaveCenter.Model;
 
 namespace WaveCenter.ModelsAPI
 {
@@ -10,6 +11,11 @@ namespace WaveCenter.ModelsAPI
         public string Password { get; set; }
         [Required]
         public string Email { get; set; }
-
+        public string Nome { get; set; } = string.Empty;
+        public string Apelido { get; set; } = string.Empty;
+        public DateTime? DataNascimento { get; set; }
+        public int NIF { get; set; }
+        public string? Morada { get; set; }
+        public int? IdTipoUser { get; set; }
     }
 }

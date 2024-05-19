@@ -1,6 +1,6 @@
 ﻿namespace WaveCenter.Model
 {
-    public class ClientesMarcacao
+    public partial class ClientesMarcacao
     {
         public int Id { get; set; }
         public int MarcacaoId { get; set; }

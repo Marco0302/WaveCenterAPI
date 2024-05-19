@@ -1,6 +1,6 @@
 ﻿namespace WaveCenter.Model
 {
-    public class Local
+    public partial class Local
     {
         public int Id { get; set; }
         public string Nome { get; set; } = string.Empty;

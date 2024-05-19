@@ -30,7 +30,18 @@ namespace WaveCenter.Controllers
             }
 
             var result = await _userManager.CreateAsync(
-                new User() { UserName = user.UserName, Email = user.Email }, user.Password
+                new User() 
+                { 
+                    UserName = user.UserName,
+                    Email = user.Email, 
+                    Apelido = user.Apelido,
+                    Nome = user.Nome,
+                    DataNascimento = user.DataNascimento,
+                    NIF = user.NIF,
+                    Morada = user.Morada,
+                    IdTipoUser = user.IdTipoUser,
+                    Ativo = true,
+                }, user.Password
             );
 
             if (!result.Succeeded)

@@ -12,7 +12,7 @@ namespace WaveCenter.Model
         public Media? Media { get; set; }
         public int? IdMedia { get; set; }
         public string? Morada { get; set; }
-        public int IdTipoUser { get; set; }
+        public int? IdTipoUser { get; set; }
         public TipoUser? TipoUser { get; set; }
         public bool Ativo { get; set; }
         public ICollection<ClientesMarcacao>? ClientesMarcacoes { get; set; }
