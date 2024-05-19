@@ -6,36 +6,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace WaveCenter.Migrations
 {
     /// <inheritdoc />
-    public partial class CriacaoDB : Migration
+    public partial class BaseDadosAtualizada : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "AspNetUsers",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
-                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
-                    TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
-                });
-
             migrationBuilder.CreateTable(
                 name: "CategoriaEquipamentos",
                 columns: table => new
@@ -63,7 +38,21 @@ namespace WaveCenter.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Galeria",
+                name: "Locais",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Nome = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Coordenadas = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Locais", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Medias",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -75,20 +64,7 @@ namespace WaveCenter.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Galeria", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Locais",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Locais", x => x.Id);
+                    table.PrimaryKey("PK_Medias", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -105,16 +81,16 @@ namespace WaveCenter.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "TipoFuncionarios",
+                name: "TipoUsers",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Designacao = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TipoFuncionarios", x => x.Id);
+                    table.PrimaryKey("PK_TipoUsers", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -139,6 +115,141 @@ namespace WaveCenter.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Vouchers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Equipamentos",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Nome = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Descricao = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Estado = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IdCategoriaEquipamento = table.Column<int>(type: "int", nullable: false),
+                    IdPedidoReparacao = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Equipamentos", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Equipamentos_CategoriaEquipamentos_IdCategoriaEquipamento",
+                        column: x => x.IdCategoriaEquipamento,
+                        principalTable: "CategoriaEquipamentos",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Experiencias",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Nome = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Descricao = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Data = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IdLocal = table.Column<int>(type: "int", nullable: false),
+                    Imagem = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    NumeroMinimoPessoas = table.Column<int>(type: "int", nullable: false),
+                    NumeroMaximoPessoas = table.Column<int>(type: "int", nullable: false),
+                    DuracaoMinima = table.Column<double>(type: "float", nullable: false),
+                    DuracaoMaxima = table.Column<double>(type: "float", nullable: false),
+                    HoraComecoDia = table.Column<double>(type: "float", nullable: false),
+                    HoraFimDia = table.Column<double>(type: "float", nullable: false),
+                    IdTipoExperiencia = table.Column<int>(type: "int", nullable: false),
+                    PrecoHora = table.Column<double>(type: "float", nullable: false),
+                    IdCategoriaExperiencia = table.Column<int>(type: "int", nullable: false),
+                    Ativo = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Experiencias", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Experiencias_CategoriaExperiencias_IdCategoriaExperiencia",
+                        column: x => x.IdCategoriaExperiencia,
+                        principalTable: "CategoriaExperiencias",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Experiencias_Locais_IdLocal",
+                        column: x => x.IdLocal,
+                        principalTable: "Locais",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Experiencias_TipoExperiencias_IdTipoExperiencia",
+                        column: x => x.IdTipoExperiencia,
+                        principalTable: "TipoExperiencias",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUsers",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Nome = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Apelido = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DataNascimento = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    NIF = table.Column<int>(type: "int", nullable: false),
+                    IdMedia = table.Column<int>(type: "int", nullable: true),
+                    Morada = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IdTipoUser = table.Column<int>(type: "int", nullable: false),
+                    Ativo = table.Column<bool>(type: "bit", nullable: false),
+                    UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AspNetUsers_Medias_IdMedia",
+                        column: x => x.IdMedia,
+                        principalTable: "Medias",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_AspNetUsers_TipoUsers_IdTipoUser",
+                        column: x => x.IdTipoUser,
+                        principalTable: "TipoUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Marcacoes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    IdExperiencia = table.Column<int>(type: "int", nullable: false),
+                    HoraInicio = table.Column<double>(type: "float", nullable: false),
+                    HoraFim = table.Column<double>(type: "float", nullable: false),
+                    NumeroParticipantesTotal = table.Column<int>(type: "int", nullable: false),
+                    ExperienciaPartilhada = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Marcacoes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Marcacoes_Experiencias_IdExperiencia",
+                        column: x => x.IdExperiencia,
+                        principalTable: "Experiencias",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -203,141 +314,13 @@ namespace WaveCenter.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Equipamentos",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Nome = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Descricao = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Estado = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IdCategoriaEquipamento = table.Column<int>(type: "int", nullable: false),
-                    IdPedidoReparacao = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Equipamentos", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Equipamentos_CategoriaEquipamentos_IdCategoriaEquipamento",
-                        column: x => x.IdCategoriaEquipamento,
-                        principalTable: "CategoriaEquipamentos",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Clientes",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Nome = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Apelido = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DataNascimento = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Morada = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    NIF = table.Column<int>(type: "int", nullable: false),
-                    IdAvatar = table.Column<int>(type: "int", nullable: true),
-                    Ativo = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Clientes", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Clientes_Galeria_IdAvatar",
-                        column: x => x.IdAvatar,
-                        principalTable: "Galeria",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Experiencias",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Nome = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Descricao = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Data = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IdLocal = table.Column<int>(type: "int", nullable: false),
-                    Imagem = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    NumeroMinimoPessoas = table.Column<int>(type: "int", nullable: false),
-                    NumeroMaximoPessoas = table.Column<int>(type: "int", nullable: false),
-                    DuracaoMinima = table.Column<double>(type: "float", nullable: false),
-                    DuracaoMaxima = table.Column<double>(type: "float", nullable: false),
-                    HoraComecoDia = table.Column<double>(type: "float", nullable: false),
-                    HoraFimDia = table.Column<double>(type: "float", nullable: false),
-                    IdTipoExperiencia = table.Column<int>(type: "int", nullable: false),
-                    PrecoHora = table.Column<double>(type: "float", nullable: false),
-                    IdCategoriaExperiencia = table.Column<int>(type: "int", nullable: false),
-                    Ativo = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Experiencias", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Experiencias_CategoriaExperiencias_IdCategoriaExperiencia",
-                        column: x => x.IdCategoriaExperiencia,
-                        principalTable: "CategoriaExperiencias",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Experiencias_Locais_IdLocal",
-                        column: x => x.IdLocal,
-                        principalTable: "Locais",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Experiencias_TipoExperiencias_IdTipoExperiencia",
-                        column: x => x.IdTipoExperiencia,
-                        principalTable: "TipoExperiencias",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Funcionarios",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Nome = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Apelido = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DataNascimento = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Morada = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Password = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Nif = table.Column<int>(type: "int", nullable: false),
-                    Verificado = table.Column<bool>(type: "bit", nullable: false),
-                    IdTipoFuncionario = table.Column<int>(type: "int", nullable: false),
-                    IdMedia = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Funcionarios", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Funcionarios_Galeria_IdMedia",
-                        column: x => x.IdMedia,
-                        principalTable: "Galeria",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Funcionarios_TipoFuncionarios_IdTipoFuncionario",
-                        column: x => x.IdTipoFuncionario,
-                        principalTable: "TipoFuncionarios",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "PedidoReparacao",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     IdEquipamento = table.Column<int>(type: "int", nullable: false),
-                    IdFuncionario = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Notas = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DataPedido = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DataConclusao = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -347,15 +330,45 @@ namespace WaveCenter.Migrations
                 {
                     table.PrimaryKey("PK_PedidoReparacao", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_PedidoReparacao_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "FK_PedidoReparacao_Equipamentos_IdEquipamento",
                         column: x => x.IdEquipamento,
                         principalTable: "Equipamentos",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ClientesMarcacoes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    MarcacaoId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Preco = table.Column<double>(type: "float", nullable: false),
+                    Rating = table.Column<double>(type: "float", nullable: false),
+                    NumeroParticipantesUser = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ClientesMarcacoes", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_PedidoReparacao_Funcionarios_IdFuncionario",
-                        column: x => x.IdFuncionario,
-                        principalTable: "Funcionarios",
+                        name: "FK_ClientesMarcacoes_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ClientesMarcacoes_Marcacoes_MarcacaoId",
+                        column: x => x.MarcacaoId,
+                        principalTable: "Marcacoes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -376,6 +389,16 @@ namespace WaveCenter.Migrations
                 column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_IdMedia",
+                table: "AspNetUsers",
+                column: "IdMedia");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_IdTipoUser",
+                table: "AspNetUsers",
+                column: "IdTipoUser");
+
+            migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
@@ -383,9 +406,14 @@ namespace WaveCenter.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Clientes_IdAvatar",
-                table: "Clientes",
-                column: "IdAvatar");
+                name: "IX_ClientesMarcacoes_MarcacaoId",
+                table: "ClientesMarcacoes",
+                column: "MarcacaoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ClientesMarcacoes_UserId",
+                table: "ClientesMarcacoes",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Equipamentos_IdCategoriaEquipamento",
@@ -408,14 +436,9 @@ namespace WaveCenter.Migrations
                 column: "IdTipoExperiencia");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Funcionarios_IdMedia",
-                table: "Funcionarios",
-                column: "IdMedia");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Funcionarios_IdTipoFuncionario",
-                table: "Funcionarios",
-                column: "IdTipoFuncionario");
+                name: "IX_Marcacoes_IdExperiencia",
+                table: "Marcacoes",
+                column: "IdExperiencia");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PedidoReparacao_IdEquipamento",
@@ -423,9 +446,9 @@ namespace WaveCenter.Migrations
                 column: "IdEquipamento");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PedidoReparacao_IdFuncionario",
+                name: "IX_PedidoReparacao_UserId",
                 table: "PedidoReparacao",
-                column: "IdFuncionario");
+                column: "UserId");
         }
 
         /// <inheritdoc />
@@ -441,10 +464,7 @@ namespace WaveCenter.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Clientes");
-
-            migrationBuilder.DropTable(
-                name: "Experiencias");
+                name: "ClientesMarcacoes");
 
             migrationBuilder.DropTable(
                 name: "PedidoReparacao");
@@ -453,7 +473,25 @@ namespace WaveCenter.Migrations
                 name: "Vouchers");
 
             migrationBuilder.DropTable(
+                name: "Marcacoes");
+
+            migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Equipamentos");
+
+            migrationBuilder.DropTable(
+                name: "Experiencias");
+
+            migrationBuilder.DropTable(
+                name: "Medias");
+
+            migrationBuilder.DropTable(
+                name: "TipoUsers");
+
+            migrationBuilder.DropTable(
+                name: "CategoriaEquipamentos");
 
             migrationBuilder.DropTable(
                 name: "CategoriaExperiencias");
@@ -463,21 +501,6 @@ namespace WaveCenter.Migrations
 
             migrationBuilder.DropTable(
                 name: "TipoExperiencias");
-
-            migrationBuilder.DropTable(
-                name: "Equipamentos");
-
-            migrationBuilder.DropTable(
-                name: "Funcionarios");
-
-            migrationBuilder.DropTable(
-                name: "CategoriaEquipamentos");
-
-            migrationBuilder.DropTable(
-                name: "Galeria");
-
-            migrationBuilder.DropTable(
-                name: "TipoFuncionarios");
         }
     }
 }

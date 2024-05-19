@@ -22,71 +22,6 @@ namespace WaveCenter.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("AccessFailedCount")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("NormalizedEmail")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("NormalizedUserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("SecurityStamp")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("UserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NormalizedEmail")
-                        .HasDatabaseName("EmailIndex");
-
-                    b.HasIndex("NormalizedUserName")
-                        .IsUnique()
-                        .HasDatabaseName("UserNameIndex")
-                        .HasFilter("[NormalizedUserName] IS NOT NULL");
-
-                    b.ToTable("AspNetUsers", (string)null);
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
                     b.Property<int>("Id")
@@ -187,7 +122,7 @@ namespace WaveCenter.Migrations
                     b.ToTable("CategoriaExperiencias");
                 });
 
-            modelBuilder.Entity("WaveCenter.Model.Cliente", b =>
+            modelBuilder.Entity("WaveCenter.Model.ClientesMarcacao", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -195,43 +130,32 @@ namespace WaveCenter.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Apelido")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("Ativo")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("DataNascimento")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("IdAvatar")
+                    b.Property<int>("MarcacaoId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Morada")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("NIF")
+                    b.Property<int>("NumeroParticipantesUser")
                         .HasColumnType("int");
 
-                    b.Property<string>("Nome")
-                        .IsRequired()
+                    b.Property<double>("Preco")
+                        .HasColumnType("float");
+
+                    b.Property<double>("Rating")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Status")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Password")
+                    b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IdAvatar");
+                    b.HasIndex("MarcacaoId");
 
-                    b.ToTable("Clientes");
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ClientesMarcacoes");
                 });
 
             modelBuilder.Entity("WaveCenter.Model.Equipamento", b =>
@@ -334,53 +258,6 @@ namespace WaveCenter.Migrations
                     b.ToTable("Experiencias");
                 });
 
-            modelBuilder.Entity("WaveCenter.Model.Funcionario", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Apelido")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("DataNascimento")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("IdMedia")
-                        .HasColumnType("int");
-
-                    b.Property<int>("IdTipoFuncionario")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Morada")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Nif")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Nome")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Password")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("Verificado")
-                        .HasColumnType("bit");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("IdMedia");
-
-                    b.HasIndex("IdTipoFuncionario");
-
-                    b.ToTable("Funcionarios");
-                });
-
             modelBuilder.Entity("WaveCenter.Model.Local", b =>
                 {
                     b.Property<int>("Id")
@@ -400,6 +277,36 @@ namespace WaveCenter.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Locais");
+                });
+
+            modelBuilder.Entity("WaveCenter.Model.Marcacao", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("ExperienciaPartilhada")
+                        .HasColumnType("bit");
+
+                    b.Property<double>("HoraFim")
+                        .HasColumnType("float");
+
+                    b.Property<double>("HoraInicio")
+                        .HasColumnType("float");
+
+                    b.Property<int>("IdExperiencia")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NumeroParticipantesTotal")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdExperiencia");
+
+                    b.ToTable("Marcacoes");
                 });
 
             modelBuilder.Entity("WaveCenter.Model.Media", b =>
@@ -428,7 +335,7 @@ namespace WaveCenter.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Galeria");
+                    b.ToTable("Medias");
                 });
 
             modelBuilder.Entity("WaveCenter.Model.PedidoReparacao", b =>
@@ -451,18 +358,19 @@ namespace WaveCenter.Migrations
                     b.Property<int>("IdEquipamento")
                         .HasColumnType("int");
 
-                    b.Property<int>("IdFuncionario")
-                        .HasColumnType("int");
-
                     b.Property<string>("Notas")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("IdEquipamento");
 
-                    b.HasIndex("IdFuncionario");
+                    b.HasIndex("UserId");
 
                     b.ToTable("PedidoReparacao");
                 });
@@ -476,6 +384,7 @@ namespace WaveCenter.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Designacao")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -483,7 +392,7 @@ namespace WaveCenter.Migrations
                     b.ToTable("TipoExperiencias");
                 });
 
-            modelBuilder.Entity("WaveCenter.Model.TipoFuncionario", b =>
+            modelBuilder.Entity("WaveCenter.Model.TipoUser", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -492,11 +401,108 @@ namespace WaveCenter.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Designacao")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("TipoFuncionarios");
+                    b.ToTable("TipoUsers");
+                });
+
+            modelBuilder.Entity("WaveCenter.Model.User", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Apelido")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Ativo")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DataNascimento")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("IdMedia")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdTipoUser")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Morada")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("NIF")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdMedia");
+
+                    b.HasIndex("IdTipoUser");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.ToTable("AspNetUsers", (string)null);
                 });
 
             modelBuilder.Entity("WaveCenter.Model.Voucher", b =>
@@ -553,7 +559,7 @@ namespace WaveCenter.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("WaveCenter.Model.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -562,7 +568,7 @@ namespace WaveCenter.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("WaveCenter.Model.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -571,20 +577,26 @@ namespace WaveCenter.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("WaveCenter.Model.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("WaveCenter.Model.Cliente", b =>
+            modelBuilder.Entity("WaveCenter.Model.ClientesMarcacao", b =>
                 {
-                    b.HasOne("WaveCenter.Model.Media", "Galeria")
-                        .WithMany()
-                        .HasForeignKey("IdAvatar");
+                    b.HasOne("WaveCenter.Model.Marcacao", null)
+                        .WithMany("ClientesMarcacoes")
+                        .HasForeignKey("MarcacaoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("Galeria");
+                    b.HasOne("WaveCenter.Model.User", null)
+                        .WithMany("ClientesMarcacoes")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("WaveCenter.Model.Equipamento", b =>
@@ -625,23 +637,15 @@ namespace WaveCenter.Migrations
                     b.Navigation("TipoExperiencia");
                 });
 
-            modelBuilder.Entity("WaveCenter.Model.Funcionario", b =>
+            modelBuilder.Entity("WaveCenter.Model.Marcacao", b =>
                 {
-                    b.HasOne("WaveCenter.Model.Media", "Media")
+                    b.HasOne("WaveCenter.Model.Experiencia", "Experiencia")
                         .WithMany()
-                        .HasForeignKey("IdMedia")
+                        .HasForeignKey("IdExperiencia")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WaveCenter.Model.TipoFuncionario", "TipoFuncionario")
-                        .WithMany()
-                        .HasForeignKey("IdTipoFuncionario")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Media");
-
-                    b.Navigation("TipoFuncionario");
+                    b.Navigation("Experiencia");
                 });
 
             modelBuilder.Entity("WaveCenter.Model.PedidoReparacao", b =>
@@ -652,15 +656,42 @@ namespace WaveCenter.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WaveCenter.Model.Funcionario", "Funcionario")
+                    b.HasOne("WaveCenter.Model.User", "User")
                         .WithMany()
-                        .HasForeignKey("IdFuncionario")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Equipamento");
 
-                    b.Navigation("Funcionario");
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("WaveCenter.Model.User", b =>
+                {
+                    b.HasOne("WaveCenter.Model.Media", "Media")
+                        .WithMany()
+                        .HasForeignKey("IdMedia");
+
+                    b.HasOne("WaveCenter.Model.TipoUser", "TipoUser")
+                        .WithMany()
+                        .HasForeignKey("IdTipoUser")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Media");
+
+                    b.Navigation("TipoUser");
+                });
+
+            modelBuilder.Entity("WaveCenter.Model.Marcacao", b =>
+                {
+                    b.Navigation("ClientesMarcacoes");
+                });
+
+            modelBuilder.Entity("WaveCenter.Model.User", b =>
+                {
+                    b.Navigation("ClientesMarcacoes");
                 });
 #pragma warning restore 612, 618
         }

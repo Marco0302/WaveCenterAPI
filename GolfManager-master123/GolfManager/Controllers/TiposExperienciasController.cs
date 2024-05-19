@@ -84,7 +84,7 @@ namespace WaveCenter.Controllers
         {
             if (_context.TipoExperiencias == null)
             {
-                return Problem("Entity set 'TipoExperiencia'  is null.");
+                return Problem("Entity is null.");
             }
             _context.TipoExperiencias.Add(tipoExperiencia);
             await _context.SaveChangesAsync();

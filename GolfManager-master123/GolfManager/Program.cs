@@ -53,14 +53,14 @@ using Microsoft.OpenApi.Models;
     });
 
 <<<<<<< Updated upstream
-    builder.Services.AddDbContext<WaveCenterContext>(
-        options => options.UseSqlServer("Server=localhost\\MSSQLSERVER03;Initial Catalog=WaveCenter;Integrated Security=True;TrustServerCertificate=True;"));
+builder.Services.AddDbContext<WaveCenterContext>(
+    options => options.UseSqlServer("Server=localhost\\MSSQLSERVER03;Initial Catalog=WaveCenter;Integrated Security=True;TrustServerCertificate=True;"));
+
 =======
 builder.Services.AddDbContext<WaveCenterContext>(
         options => options.UseSqlServer("Server=DLJYFFHR3\\SQLEXPRESS;User Id=LocalUserDB;password=1234;Initial Catalog=WaveCenter;Integrated Security=True;TrustServerCertificate=True;"));
 >>>>>>> Stashed changes
-
-    builder.Services.AddScoped<JwtService>();
+builder.Services.AddScoped<JwtService>();
 
     builder.Services.AddIdentityCore<User>(options =>
     {

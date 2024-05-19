@@ -84,7 +84,7 @@ namespace WaveCenter.Controllers
         {
             if (_context.PedidoReparacao == null)
             {
-                return Problem("Entity set 'PedidoReparacao'  is null.");
+                return Problem("Entity is null.");
             }
             _context.PedidoReparacao.Add(pedidoReparacao);
             await _context.SaveChangesAsync();
