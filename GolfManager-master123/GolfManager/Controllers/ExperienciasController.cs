@@ -60,6 +60,30 @@ namespace WaveCenter.Controllers
             return Ok(result);
         }
 
+        [HttpGet("ExperienciasSimples")]
+        public async Task<ActionResult<IEnumerable<Experiencia>>> GetSimpleExperiencias()
+        {
+            if (_context.Experiencias == null)
+            {
+                return NotFound();
+            }
+
+            var experiencias = await _context.Experiencias
+                    .Select(x => new
+                    {
+                        x.Id,
+                        x.Nome,
+                        x.Descricao,
+                        x.NumeroMinimoPessoas,
+                        x.NumeroMaximoPessoas,
+                        x.CategoriaExperiencia,
+                        x.TipoExperiencia
+                    })
+                    .ToListAsync();
+
+            return Ok(experiencias);
+        }
+
         [HttpGet("user/{userId}")]
         public async Task<ActionResult<IEnumerable<Experiencia>>> GetExperiencias(string userId)
         {
