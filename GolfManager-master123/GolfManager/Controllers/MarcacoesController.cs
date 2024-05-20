@@ -45,6 +45,7 @@ namespace WaveCenter.Controllers
             var insertMarcacao = new Marcacao()
             {
                 IdExperiencia = marcacao.IdExperiencia,
+                Data = marcacao.Data,
                 HoraInicio = marcacao.HoraInicio,
                 HoraFim = marcacao.HoraFim,
                 NumeroParticipantesTotal = marcacao.NumeroParticipantes,
@@ -70,6 +71,28 @@ namespace WaveCenter.Controllers
             await _context.SaveChangesAsync();  // Salvar mudanças novamente
 
             return CreatedAtAction(nameof(GetMarcacaoById), new { id = insertMarcacao.Id }, marcacao);
+        }
+
+
+        [HttpPost("{marcacaoId}/{clienteId}")]
+        public async Task<IActionResult> AddUserToMarcacao(string clienteId, int marcacaoId, ClientesMarcacao clienteMarcacao)
+        {
+            // Validate the incoming model
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            // Add the client to the Marcacao (appointment) in the ClientesMarcacoes table
+            clienteMarcacao.MarcacaoId = marcacaoId;
+            clienteMarcacao.UserId = clienteId;
+            clienteMarcacao.Status = "Pendente";
+
+            _context.ClientesMarcacoes.Add(clienteMarcacao);
+            await _context.SaveChangesAsync();  // Save changes to the database
+
+            // Return a response indicating that the resource was created
+            return CreatedAtAction(nameof(AddUserToMarcacao), new { id = marcacaoId });
         }
 
 

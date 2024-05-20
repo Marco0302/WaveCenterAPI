@@ -30,10 +30,93 @@ namespace WaveCenter.Controllers
                 return NotFound();
             }
 
-            var experiencias = await _context.Experiencias.Include(x => x.Local).Include(x => x.CategoriaExperiencia).Include(x => x.TipoExperiencia).ToListAsync();
+            var experiencias = await _context.Experiencias
+                .Include(x => x.Local)
+                .Include(x => x.CategoriaExperiencia)
+                .Include(x => x.TipoExperiencia)
+                .Select(x => new
+                {
+                    Experiencia = x,
+                    AverageRating = _context.Marcacoes
+                        .Where(m => m.IdExperiencia == x.Id)
+                        .SelectMany(m => m.ClientesMarcacoes)
+                        .Average(cm => (double?)cm.Rating) ?? 0,
+                    RatingCount = _context.Marcacoes
+                        .Where(m => m.IdExperiencia == x.Id)
+                        .SelectMany(m => m.ClientesMarcacoes)
+                        .Count(cm => cm.Rating != null)
+                })
+                .OrderByDescending(x => x.Experiencia.DataInicio)
+                .ThenByDescending(x => x.AverageRating)
+                .ToListAsync();
 
-            return Ok(experiencias);
+            var result = experiencias.Select(x => new
+            {
+                x.Experiencia,
+                x.AverageRating,
+                x.RatingCount
+            }).ToList();
+
+            return Ok(result);
         }
+
+        [HttpGet("user/{userId}")]
+        public async Task<ActionResult<IEnumerable<Experiencia>>> GetExperiencias(string userId)
+        {
+            if (_context.Experiencias == null)
+            {
+                return NotFound();
+            }
+
+            var result1 = await _context.Experiencias
+                .Include(x => x.Local)
+                .Include(x => x.CategoriaExperiencia)
+                .Include(x => x.TipoExperiencia)
+                .Join(_context.Marcacoes,
+                      experiencia => experiencia.Id,
+                      marcacao => marcacao.IdExperiencia,
+                      (experiencia, marcacao) => new { Experiencia = experiencia, Marcacao = marcacao })
+                .Join(_context.ClientesMarcacoes,
+                      combined => combined.Marcacao.Id,
+                      clienteMarcacao => clienteMarcacao.MarcacaoId,
+                      (combined, clienteMarcacao) => new { combined.Experiencia, combined.Marcacao, ClienteMarcacao = clienteMarcacao })
+                .Select(x => new
+                {
+                    x.Experiencia,
+                    x.Marcacao,
+                    x.ClienteMarcacao,
+                    AverageRating = _context.Marcacoes
+                        .Where(m => m.IdExperiencia == x.Experiencia.Id)
+                        .SelectMany(m => m.ClientesMarcacoes)
+                        .Average(cm => (double?)cm.Rating) ?? 0,
+                    RatingCount = _context.Marcacoes
+                        .Where(m => m.IdExperiencia == x.Experiencia.Id)
+                        .SelectMany(m => m.ClientesMarcacoes)
+                        .Count(cm => cm.Rating != null),
+                    TotalParticipants = _context.Marcacoes
+                        .Where(m => m.IdExperiencia == x.Experiencia.Id)
+                        .SelectMany(m => m.ClientesMarcacoes)
+                        .Sum(cm => (int)cm.NumeroParticipantesUser)
+                })
+                .Where(x => x.ClienteMarcacao.UserId == userId)
+                .OrderByDescending(x => x.Marcacao.Data)
+                .ThenByDescending(x => x.AverageRating)
+                .ToListAsync();
+
+            var result2 = result1.Select(x => new
+            {
+                x.Experiencia,
+                x.Marcacao,
+                x.ClienteMarcacao,
+                x.AverageRating,
+                x.RatingCount,
+                x.TotalParticipants,
+            }).ToList();
+
+            return Ok(result2);
+        }
+
+
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Experiencia>> GetExperiencia(int id)
@@ -51,6 +134,48 @@ namespace WaveCenter.Controllers
 
             return experiencia;
         }
+
+
+        [HttpGet("ExperienciasPopulares")]
+        public async Task<ActionResult<IEnumerable<Experiencia>>> GetPopularExperiencias()
+        {
+            if (_context.Experiencias == null)
+            {
+                return NotFound();
+            }
+
+            var experiencias = await _context.Experiencias
+                .Include(x => x.Local)
+                .Include(x => x.CategoriaExperiencia)
+                .Include(x => x.TipoExperiencia)
+                .Select(x => new
+                {
+                    Experiencia = x,
+                    AverageRating = _context.Marcacoes
+                        .Where(m => m.IdExperiencia == x.Id)
+                        .SelectMany(m => m.ClientesMarcacoes)
+                        .Average(cm => (double?)cm.Rating) ?? 0,
+                    RatingCount = _context.Marcacoes
+                        .Where(m => m.IdExperiencia == x.Id)
+                        .SelectMany(m => m.ClientesMarcacoes)
+                        .Count(cm => cm.Rating != null)
+                })
+                .Where(x => x.Experiencia.DataInicio > DateTime.Today.Date)
+                .OrderByDescending(x => x.Experiencia.DataInicio)
+                .ThenByDescending(x => x.AverageRating)
+                .Take(8)
+                .ToListAsync();
+
+            var result = experiencias.Select(x => new
+            {
+                x.Experiencia,
+                x.AverageRating,
+                x.RatingCount
+            }).ToList();
+
+            return Ok(result);
+        }
+
 
         [HttpPut("{id}")]
         public async Task<IActionResult> PutExperiencia(int id, Experiencia experiencia)
@@ -93,7 +218,8 @@ namespace WaveCenter.Controllers
             {
                 Nome = experiencia.Nome,
                 Descricao = experiencia.Descricao,
-                Data = experiencia.Data,
+                DataInicio = experiencia.DataInicio,
+                DataFim = experiencia.DataFim,
                 IdLocal = experiencia.IdLocal,
                 Imagem = experiencia.Imagem,
                 NumeroMaximoPessoas = experiencia.NumeroMaximoPessoas,
@@ -105,7 +231,7 @@ namespace WaveCenter.Controllers
                 IdTipoExperiencia = experiencia.IdTipoExperiencia,
                 PrecoHora = experiencia.PrecoHora,
                 IdCategoriaExperiencia = experiencia.IdCategoriaExperiencia,
-                Ativo = experiencia.Ativo
+                Ativo = true
             });
 
             await _context.SaveChangesAsync();

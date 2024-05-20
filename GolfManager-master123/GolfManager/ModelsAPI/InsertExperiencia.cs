@@ -7,7 +7,8 @@ namespace WaveCenter.ModelsAPI
         public int Id { get; set; }
         public string Nome { get; set; } = string.Empty;
         public string Descricao { get; set; } = string.Empty;
-        public DateTime Data { get; set; }
+        public DateTime DataInicio { get; set; }
+        public DateTime DataFim { get; set; }
         public int IdLocal { get; set; }
         public string Imagem { get; set; } = string.Empty;
         public int NumeroMinimoPessoas { get; set; }
@@ -20,6 +21,5 @@ namespace WaveCenter.ModelsAPI
         public int IdTipoExperiencia { get; set; }
         public double PrecoHora { get; set; }
         public int IdCategoriaExperiencia { get; set; }
-        public bool Ativo { get; set; }
     }
 }

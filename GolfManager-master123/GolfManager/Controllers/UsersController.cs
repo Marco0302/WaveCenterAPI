@@ -73,21 +73,16 @@ namespace WaveCenter.Controllers
 
         // GET: api/Users/email
         [HttpGet("/api/Users/email/{email}")]
-        [Authorize]
         public async Task<ActionResult<User>> GetUserByEmail(string email)
         {
-            User user = await _userManager.FindByEmailAsync(email);
+            User founduser = await _userManager.FindByEmailAsync(email);
 
-            if (user == null)
+            if (founduser == null)
             {
                 return NotFound();
             }
 
-            return new User
-            {
-                UserName = user.UserName,
-                Email = user.Email
-            };
+            return founduser;
         }
 
         // POST: api/Users/BearerToken
