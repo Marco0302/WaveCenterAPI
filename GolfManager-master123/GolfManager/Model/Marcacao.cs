@@ -5,7 +5,7 @@
         public int Id { get; set; }
         public int IdExperiencia { get; set; }
         public DateTime Data { get; set; }
-        public Experiencia Experiencia { get; set; }
+        public Experiencia? Experiencia { get; set; }
         // Em horas e.g 1.5 -> hora e meia 
         public double HoraInicio { get; set; }
         public double HoraFim { get; set; }

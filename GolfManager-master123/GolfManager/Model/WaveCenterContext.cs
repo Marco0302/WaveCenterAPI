@@ -49,7 +49,7 @@ public partial class WaveCenterContext : IdentityUserContext<User>
                 .WithMany()
                 .HasForeignKey(p => p.IdMedia);
         });
-
+  
 
         modelBuilder.Entity<Equipamento>(entity =>
         {
@@ -90,8 +90,10 @@ public partial class WaveCenterContext : IdentityUserContext<User>
                 .HasForeignKey(e => e.IdExperiencia);
         });
 
-
-
+        modelBuilder.Entity<ClientesMarcacao>()
+         .HasOne(cm => cm.Marcacao)
+         .WithMany(m => m.ClientesMarcacoes)
+         .HasForeignKey(cm => cm.MarcacaoId);
 
         OnModelCreatingPartial(modelBuilder);
     }

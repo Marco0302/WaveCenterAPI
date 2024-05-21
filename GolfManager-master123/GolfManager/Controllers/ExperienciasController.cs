@@ -85,7 +85,7 @@ namespace WaveCenter.Controllers
         }
 
         [HttpGet("user/{userId}")]
-        public async Task<ActionResult<IEnumerable<Experiencia>>> GetExperiencias(string userId)
+        public async Task<ActionResult<IEnumerable<Experiencia>>> GetExperienciasUser(string userId)
         {
             if (_context.Experiencias == null)
             {
@@ -117,10 +117,9 @@ namespace WaveCenter.Controllers
                         .Where(m => m.IdExperiencia == x.Experiencia.Id)
                         .SelectMany(m => m.ClientesMarcacoes)
                         .Count(cm => cm.Rating != null),
-                    TotalParticipants = _context.Marcacoes
-                        .Where(m => m.IdExperiencia == x.Experiencia.Id)
-                        .SelectMany(m => m.ClientesMarcacoes)
-                        .Sum(cm => (int)cm.NumeroParticipantesUser)
+                    TotalParticipants = _context.ClientesMarcacoes
+                        .Where(cm => cm.MarcacaoId == x.Marcacao.Id)
+                        .Sum(cm => (int?)cm.NumeroParticipantesUser) ?? 0
                 })
                 .Where(x => x.ClienteMarcacao.UserId == userId)
                 .OrderByDescending(x => x.Marcacao.Data)
@@ -157,6 +156,81 @@ namespace WaveCenter.Controllers
             }
 
             return experiencia;
+        }
+
+
+        [HttpGet("experiencia/{id}/{userId}")]
+        public async Task<ActionResult<ReturnedExperiencia>> GetExperienciaById(int id, string userId)
+        {
+            var marcacoes = await _context.Marcacoes
+                .Include(m => m.Experiencia)
+                .Include(m => m.Experiencia.Local)
+                .Include(m => m.Experiencia.TipoExperiencia)
+                .Include(m => m.Experiencia.CategoriaExperiencia)
+                .Include(m => m.ClientesMarcacoes)
+                .Where(m => m.IdExperiencia == id)
+                .Select(x => new
+                {
+                    Marcacao = x,
+                    AverageRating = _context.Marcacoes
+                        .Where(m => m.IdExperiencia == x.Experiencia.Id)
+                        .SelectMany(m => m.ClientesMarcacoes)
+                        .Average(cm => (double?)cm.Rating) ?? 0,
+                    RatingCount = _context.Marcacoes
+                        .Where(m => m.IdExperiencia == x.Experiencia.Id)
+                        .SelectMany(m => m.ClientesMarcacoes)
+                        .Count(cm => cm.Rating != null),
+                    TotalParticipants = _context.Marcacoes
+                        .Where(m => m.IdExperiencia == x.Experiencia.Id)
+                        .SelectMany(m => m.ClientesMarcacoes)
+                        .Sum(cm => (int)cm.NumeroParticipantesUser)
+                })
+                .ToListAsync();
+
+
+            if (!marcacoes.Any())
+            {
+                var experiencias = await _context.Experiencias
+                    .Include(m => m.Local)
+                    .Include(m => m.TipoExperiencia)
+                    .Include(m => m.CategoriaExperiencia)
+                    .Where(m => m.Id == id)
+                    .ToListAsync();
+                ReturnedExperiencia returnExperiencia = new();
+                returnExperiencia.Experiencia = experiencias.FirstOrDefault();
+
+                if (!experiencias.Any()) 
+                {
+                    return Problem("No Experiencia Found");
+                }
+
+                return Ok(returnExperiencia);
+            }
+            else
+            {
+                ReturnedExperiencia returnExperiencia = new();
+                returnExperiencia.Experiencia = marcacoes.First().Marcacao.Experiencia;
+                returnExperiencia.Experiencia.Marcacoes = new List<Marcacao>();
+
+                foreach (var x in marcacoes)
+                {
+                    Marcacao marcacaoAdd = x.Marcacao;
+                    marcacaoAdd.Experiencia = null;
+
+                    if(!marcacaoAdd.ClientesMarcacoes.Any(x => x.UserId == userId) && marcacaoAdd.ExperienciaPartilhada == true)
+                    {
+                        returnExperiencia.Experiencia.Marcacoes.Add(marcacaoAdd);
+                    }
+                }
+
+
+                returnExperiencia.AverageRating = marcacoes.First().AverageRating;
+                returnExperiencia.RatingCount = marcacoes.First().RatingCount;
+                returnExperiencia.TotalParticipants = marcacoes.First().TotalParticipants;
+
+
+                return Ok(returnExperiencia);
+            }
         }
 
 

@@ -5,19 +5,18 @@ using WaveCenter.ModelsAPI;
 
 namespace WaveCenter.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
-    public class MarcacoesController : ControllerBase
+    public class Marcacoes2Controller : ControllerBase
     {
         private readonly WaveCenterContext _context;
 
-        public MarcacoesController(WaveCenterContext context)
+        public Marcacoes2Controller(WaveCenterContext context)
         {
             _context = context;
         }
 
 
-        [HttpGet("{clienteId}/cliente-marcacoes")]
+        [HttpGet("api/[controller]/{clienteId}/cliente-marcacoes")]
         public async Task<IActionResult> GetClienteMarcacoes(string clienteId)
         {
             // Retrieve the Marcacao records for the specified clienteId
@@ -34,7 +33,7 @@ namespace WaveCenter.Controllers
             return Ok(marcacoes);
         }
 
-        [HttpPost("cliente/{idCliente}")]
+        [HttpPost("api/[controller]/cliente/{idCliente}")]
         public async Task<IActionResult> CreateMarcacao(string idCliente, InsertMarcacao marcacao)
         {
             if (!ModelState.IsValid)
@@ -73,8 +72,7 @@ namespace WaveCenter.Controllers
             return CreatedAtAction(nameof(GetMarcacaoById), new { id = insertMarcacao.Id }, marcacao);
         }
 
-        //{marcacaoId}/{clienteId}
-        [HttpPost("x")]
+        [HttpPost("api/[controller]/marcacao/{marcacaoId}/{clienteId}")]
         public async Task<IActionResult> AddUserToMarcacao(string clienteId, int marcacaoId, InsertClienteMarcacao insertclienteMarcacao)
         {
             // Validate the incoming model
@@ -100,9 +98,6 @@ namespace WaveCenter.Controllers
             // Return a response indicating that the resource was created
             return CreatedAtAction(nameof(AddUserToMarcacao), new { id = marcacaoId });
         }
-
-
-
 
 
         // Optional: Add a method to get a single Marcacao by ID

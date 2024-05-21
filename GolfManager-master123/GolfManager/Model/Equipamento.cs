@@ -8,6 +8,5 @@ public partial class Equipamento
     public string Estado { get; set; } = string.Empty;
     public int IdCategoriaEquipamento { get; set; }
     public CategoriaEquipamento? CategoriaEquipamento { get; set; }
-    public int IdPedidoReparacao { get; set; }
 }
 

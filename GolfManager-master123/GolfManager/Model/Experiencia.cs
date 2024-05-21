@@ -27,4 +27,5 @@ public partial class Experiencia
     //public ExperienciaData ExperienciaData { get; set; }
     //public int IdExperienciaData { get; set; }
     public bool Ativo { get; set; }
+    public ICollection<Marcacao>? Marcacoes { get; set; }
 }
