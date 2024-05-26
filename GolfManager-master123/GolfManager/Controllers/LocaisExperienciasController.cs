@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WaveCenter.Model;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WaveCenter.Controllers
 {
@@ -21,6 +22,7 @@ namespace WaveCenter.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<Local>>> GetLocalExperiencias()
         {
             if (_context.Locais == null)
@@ -33,6 +35,7 @@ namespace WaveCenter.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<Local>> GetLocalExperiencia(int id)
         {
             if (_context.Locais == null)
@@ -51,6 +54,7 @@ namespace WaveCenter.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> PutLocalExperiencia(int id, Local localExperiencia)
         {
             if (id != localExperiencia.Id)
@@ -80,6 +84,7 @@ namespace WaveCenter.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<Local>> PostLocalExperiencia(Local localExperiencia)
         {
             if (_context.Locais == null)
@@ -93,6 +98,7 @@ namespace WaveCenter.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> DeleteLocalExperiencia(int id)
         {
             if (_context.Locais == null)

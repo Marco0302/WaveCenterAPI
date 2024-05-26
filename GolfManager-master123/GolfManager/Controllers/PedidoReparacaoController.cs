@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WaveCenter.Model;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WaveCenter.Controllers
 {
@@ -21,6 +22,7 @@ namespace WaveCenter.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<PedidoReparacao>>> GetPedidosReparacao()
         {
             if (_context.PedidoReparacao == null)
@@ -34,6 +36,7 @@ namespace WaveCenter.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<PedidoReparacao>> GetPedidoReparacao(int id)
         {
             if (_context.PedidoReparacao == null)
@@ -51,6 +54,7 @@ namespace WaveCenter.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> PutPedidoReparacao(int id, PedidoReparacao pedidoReparacao)
         {
             if (id != pedidoReparacao.Id)
@@ -80,6 +84,7 @@ namespace WaveCenter.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<PedidoReparacao>> PostPedidoReparacao(PedidoReparacao pedidoReparacao)
         {
             if (_context.PedidoReparacao == null)
@@ -93,6 +98,7 @@ namespace WaveCenter.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> DeletePedidoReparacao(int id)
         {
             if (_context.PedidoReparacao == null)

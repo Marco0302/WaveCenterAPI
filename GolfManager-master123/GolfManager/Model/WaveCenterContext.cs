@@ -33,6 +33,9 @@ public partial class WaveCenterContext : IdentityUserContext<User>
     public virtual DbSet<ClientesMarcacao> ClientesMarcacoes { get; set; }
 
     public virtual DbSet<PedidoReparacao> PedidoReparacao { get; set; }
+    public virtual DbSet<PedidoReparacaoEstados> PedidoReparacaoEstados { get; set; }
+
+
     public virtual DbSet<TipoUser> TipoUsers { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -81,6 +84,13 @@ public partial class WaveCenterContext : IdentityUserContext<User>
             entity.HasOne(p => p.User)
                 .WithMany()
                 .HasForeignKey(p => p.UserId);
+        });
+
+        modelBuilder.Entity<PedidoReparacaoEstados>(entity =>
+        {
+            entity.HasOne(p => p.PedidoReparacao)
+                .WithMany()
+                .HasForeignKey(p => p.IdPedidoReparacao);
         });
 
         modelBuilder.Entity<Marcacao>(entity =>

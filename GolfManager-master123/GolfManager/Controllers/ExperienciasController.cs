@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WaveCenter.Model;
 using WaveCenter.ModelsAPI;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WaveCenter.Controllers
 {
@@ -23,6 +24,7 @@ namespace WaveCenter.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<Experiencia>>> GetExperiencias()
         {
             if (_context.Experiencias == null)
@@ -61,6 +63,7 @@ namespace WaveCenter.Controllers
         }
 
         [HttpGet("ExperienciasSimples")]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<Experiencia>>> GetSimpleExperiencias()
         {
             if (_context.Experiencias == null)
@@ -85,6 +88,7 @@ namespace WaveCenter.Controllers
         }
 
         [HttpGet("user/{userId}")]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<Experiencia>>> GetExperienciasUser(string userId)
         {
             if (_context.Experiencias == null)
@@ -139,9 +143,8 @@ namespace WaveCenter.Controllers
             return Ok(result2);
         }
 
-
-
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<Experiencia>> GetExperiencia(int id)
         {
             if (_context.Experiencias == null)
@@ -158,8 +161,8 @@ namespace WaveCenter.Controllers
             return experiencia;
         }
 
-
         [HttpGet("experiencia/{id}/{userId}")]
+        [Authorize]
         public async Task<ActionResult<ReturnedExperiencia>> GetExperienciaById(int id, string userId)
         {
             var marcacoes = await _context.Marcacoes
@@ -233,8 +236,8 @@ namespace WaveCenter.Controllers
             }
         }
 
-
         [HttpGet("ExperienciasPopulares")]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<Experiencia>>> GetPopularExperiencias()
         {
             if (_context.Experiencias == null)
@@ -274,8 +277,8 @@ namespace WaveCenter.Controllers
             return Ok(result);
         }
 
-
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> PutExperiencia(int id, Experiencia experiencia)
         {
             if (id != experiencia.Id)
@@ -305,6 +308,7 @@ namespace WaveCenter.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<Experiencia>> PostExperiencia(InsertExperiencia experiencia)
         {
             if (_context.Experiencias == null)
@@ -338,6 +342,7 @@ namespace WaveCenter.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> DeleteExperiencia(int id)
         {
             if (_context.Experiencias == null)

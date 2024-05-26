@@ -59,8 +59,6 @@ namespace WaveCenter.Controllers
         {
             User user = await _userManager.FindByNameAsync(username);
 
-            
-
             if (user == null)
             {
                 return NotFound();
@@ -69,7 +67,8 @@ namespace WaveCenter.Controllers
             return new User
             {
                 UserName = user.UserName,
-                Email = user.Email
+                Email = user.Email,
+                IdTipoUser = user.IdTipoUser
             };
         }
 

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WaveCenter.Model;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WaveCenter.Controllers
 {
@@ -21,6 +22,7 @@ namespace WaveCenter.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<CategoriaEquipamento>>> GetCategoriaEquipamentos()
         {
             if (_context.CategoriaEquipamentos == null)
@@ -33,6 +35,7 @@ namespace WaveCenter.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<CategoriaEquipamento>> GetCategoriaEquipamento(int id)
         {
             if (_context.CategoriaEquipamentos == null)
@@ -51,6 +54,7 @@ namespace WaveCenter.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> PutCategoriaEquipamento(int id, CategoriaEquipamento categoriaEquipamentos)
         {
             if (id != categoriaEquipamentos.Id)
@@ -80,6 +84,7 @@ namespace WaveCenter.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<CategoriaEquipamento>> PostCategoriaEquipamento(CategoriaEquipamento categoriaEquipamento)
         {
             if (_context.CategoriaEquipamentos == null)
@@ -93,6 +98,7 @@ namespace WaveCenter.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> DeleteCategoriaEquipamento(int id)
         {
             if (_context.CategoriaEquipamentos == null)
