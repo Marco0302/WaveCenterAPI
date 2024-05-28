@@ -35,6 +35,20 @@ namespace WaveCenter.Controllers
             return Ok(pedidosReparacao);
         }
 
+        [HttpGet("user/{id}")]
+        [Authorize]
+        public async Task<ActionResult<IEnumerable<PedidoReparacao>>> GetPedidosReparacaoUser(string id)
+        {
+            if (_context.PedidoReparacao == null)
+            {
+                return NotFound();
+            }
+
+            var pedidosReparacao = await _context.PedidoReparacao.Include(x => x.Equipamento).Include(x => x.User).Where(x => x.UserId == id) .ToListAsync();
+
+            return Ok(pedidosReparacao);
+        }
+
         [HttpGet("{id}")]
         [Authorize]
         public async Task<ActionResult<PedidoReparacao>> GetPedidoReparacao(int id)
