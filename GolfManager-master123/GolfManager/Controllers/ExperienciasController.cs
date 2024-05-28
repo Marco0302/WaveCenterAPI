@@ -162,7 +162,6 @@ namespace WaveCenter.Controllers
         }
 
         [HttpGet("experiencia/{id}/{userId}")]
-        [Authorize]
         public async Task<ActionResult<ReturnedExperiencia>> GetExperienciaById(int id, string userId)
         {
             var marcacoes = await _context.Marcacoes
@@ -220,12 +219,20 @@ namespace WaveCenter.Controllers
                     Marcacao marcacaoAdd = x.Marcacao;
                     marcacaoAdd.Experiencia = null;
 
-                    if(!marcacaoAdd.ClientesMarcacoes.Any(x => x.UserId == userId) && marcacaoAdd.ExperienciaPartilhada == true)
+                    foreach(var cm in marcacaoAdd.ClientesMarcacoes)
+                    {
+                        if(cm.Status != "Pendente")
+                        {
+                            marcacaoAdd.ClientesMarcacoes.Remove(cm);
+                        }
+                    }
+
+
+                    if(!marcacaoAdd.ClientesMarcacoes.Any(x => x.UserId == userId) && marcacaoAdd.ExperienciaPartilhada == true && marcacaoAdd.ClientesMarcacoes.Count() > 0)
                     {
                         returnExperiencia.Experiencia.Marcacoes.Add(marcacaoAdd);
                     }
                 }
-
 
                 returnExperiencia.AverageRating = marcacoes.First().AverageRating;
                 returnExperiencia.RatingCount = marcacoes.First().RatingCount;
@@ -237,7 +244,6 @@ namespace WaveCenter.Controllers
         }
 
         [HttpGet("ExperienciasPopulares")]
-        [Authorize]
         public async Task<ActionResult<IEnumerable<Experiencia>>> GetPopularExperiencias()
         {
             if (_context.Experiencias == null)

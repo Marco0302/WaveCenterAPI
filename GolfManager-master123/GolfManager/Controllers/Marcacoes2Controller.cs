@@ -72,7 +72,7 @@ namespace WaveCenter.Controllers
             return CreatedAtAction(nameof(GetMarcacaoById), new { id = insertMarcacao.Id }, marcacao);
         }
 
-        [HttpPost("api/[controller]/marcacao/{marcacaoId}/{clienteId}")]
+        [HttpPost("api/[controller]/partilhada/{marcacaoId}/{clienteId}")]
         public async Task<IActionResult> AddUserToMarcacao(string clienteId, int marcacaoId, InsertClienteMarcacao insertclienteMarcacao)
         {
             // Validate the incoming model
@@ -115,6 +115,8 @@ namespace WaveCenter.Controllers
 
             return Ok(marcacao);
         }
+
+
 
 
     }
