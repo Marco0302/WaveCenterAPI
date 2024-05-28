@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WaveCenter.Model;
 
@@ -11,9 +12,11 @@ using WaveCenter.Model;
 namespace WaveCenter.Migrations
 {
     [DbContext(typeof(WaveCenterContext))]
-    partial class WaveCenterContextModelSnapshot : ModelSnapshot
+    [Migration("20240528214535_EquipamentosMarcacoes2")]
+    partial class EquipamentosMarcacoes2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -679,7 +682,7 @@ namespace WaveCenter.Migrations
                         .IsRequired();
 
                     b.HasOne("WaveCenter.Model.Marcacao", "Marcacao")
-                        .WithMany()
+                        .WithMany("EquipamentosMarcacoes")
                         .HasForeignKey("IdEquipamento")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -784,6 +787,8 @@ namespace WaveCenter.Migrations
             modelBuilder.Entity("WaveCenter.Model.Marcacao", b =>
                 {
                     b.Navigation("ClientesMarcacoes");
+
+                    b.Navigation("EquipamentosMarcacoes");
                 });
 
             modelBuilder.Entity("WaveCenter.Model.User", b =>

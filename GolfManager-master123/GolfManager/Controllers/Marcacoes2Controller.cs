@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WaveCenter.Model;
 using WaveCenter.ModelsAPI;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WaveCenter.Controllers
 {
@@ -15,6 +17,36 @@ namespace WaveCenter.Controllers
             _context = context;
         }
 
+        [HttpGet("api/[controller]/marcacoes/")]
+        public async Task<ActionResult<IEnumerable<Marcacao>>> GetMarcacoes()
+        {
+            if (_context.Marcacoes == null)
+            {
+                return NotFound();
+            }
+
+            var marcacoes = await _context.Marcacoes.Include(x => x.Experiencia).ToListAsync();
+
+            return Ok(marcacoes);
+        }
+
+        [HttpGet("api/[controller]/marcacoes/{id}")]
+        [Authorize]
+        public async Task<ActionResult<Marcacao>> GetMarcacao(int id)
+        {
+            if (_context.Marcacoes == null)
+            {
+                return NotFound();
+            }
+            var marcacao = await _context.Marcacoes.Include(x => x.Experiencia).FirstOrDefaultAsync(x => x.Id == id);
+
+            if (marcacao == null)
+            {
+                return NotFound();
+            }
+
+            return marcacao;
+        }
 
         [HttpGet("api/[controller]/{clienteId}/cliente-marcacoes")]
         public async Task<IActionResult> GetClienteMarcacoes(string clienteId)
@@ -114,6 +146,42 @@ namespace WaveCenter.Controllers
             }
 
             return Ok(marcacao);
+        }
+
+
+        //MARCACAO -> EQUIPAMENTOS
+        [HttpGet("disponiveis")]
+        public async Task<ActionResult<IEnumerable<Equipamento>>> GetEquipamentosDisponiveis(double horaInicio, double horaFim)
+        {
+            var equipamentosDisponiveis = await ObterEquipamentosDisponiveis(horaInicio, horaFim);
+            return Ok(equipamentosDisponiveis);
+        }
+
+        private async Task<List<Equipamento>> ObterEquipamentosDisponiveis(double horaInicio, double horaFim)
+        {
+            // Hora de início e fim recebidas convertidas para TimeSpan
+            TimeSpan inicio = TimeSpan.FromHours(horaInicio);
+            TimeSpan fim = TimeSpan.FromHours(horaFim);
+
+            // Obter todas as marcações que conflitam com o horário fornecido
+            var marcacoesConflitantes = await _context.Marcacoes
+                .Where(m => (m.HoraInicio < fim.TotalHours && m.HoraFim > inicio.TotalHours))
+                .Select(m => m.Id)
+                .ToListAsync();
+
+            // Obter os equipamentos que estão associados às marcações conflitantes
+            var equipamentosIndisponiveis = await _context.EquipamentosMarcacoes
+                .Where(em => marcacoesConflitantes.Contains(em.IdMarcacao))
+                .Select(em => em.IdEquipamento)
+                .Distinct()
+                .ToListAsync();
+
+            // Obter todos os equipamentos que não estão na lista de indisponíveis
+            var equipamentosDisponiveis = await _context.Equipamentos
+                .Where(e => !equipamentosIndisponiveis.Contains(e.Id))
+                .ToListAsync();
+
+            return equipamentosDisponiveis;
         }
 
 
