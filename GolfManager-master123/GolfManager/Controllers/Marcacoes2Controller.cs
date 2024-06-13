@@ -151,7 +151,7 @@ namespace WaveCenter.Controllers
 
 
         // Novo endpoint para mudar o estado da marcação
-        [HttpPost("ChangeEstado")]
+        [HttpPost("api/ChangeEstado")]
         public async Task<ActionResult> ChangeMarcacaoEstados(int marcacaoId, string novoEstado)
         {
             var estadosValidos = new List<string> { "Pendente", "Confirmada", "Cancelada", "Completa" };
@@ -224,6 +224,27 @@ namespace WaveCenter.Controllers
             return Ok("Estado da marcação alterado com sucesso.");
         }
 
+        [HttpGet("api/[controller]/marcacoes/ultimodia")]
+        public async Task<string> GetMarcacoesUltimoDia()
+        {
+            if (_context.Marcacoes == null)
+            {
+                return "0";
+            }
+
+            return _context.Marcacoes.Where(x => x.Data.Day == DateTime.Now.Day).Count().ToString();
+        }
+
+        [HttpGet("api/[controller]/marcacoes/ultimos7dias")]
+        public async Task<string> GetMarcacoesUltimos7Dias()
+        {
+            if (_context.Marcacoes == null)
+            {
+                return "0";
+            }
+
+            return _context.Marcacoes.Where(x => x.Data >= DateTime.Now.AddDays(-7)).Count().ToString();
+        }
 
 
         ////MARCACAO -> EQUIPAMENTOS

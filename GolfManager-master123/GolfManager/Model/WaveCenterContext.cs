@@ -117,16 +117,16 @@ public partial class WaveCenterContext : IdentityUserContext<User>
                 .HasForeignKey(cm => cm.IdEquipamento);
         });
 
-        modelBuilder.Entity<EquipamentosExperiencia>(entity =>
-        {
-            entity.HasOne(cm => cm.Experiencia)
-                .WithMany()
-                .HasForeignKey(cm => cm.IdExperiencia);
+        //modelBuilder.Entity<EquipamentosExperiencia>(entity =>
+        //{
+        //    entity.HasOne(cm => cm.Experiencia)
+        //        .WithMany()
+        //        .HasForeignKey(cm => cm.IdExperiencia);
 
-            entity.HasOne(cm => cm.CategoriaEquipamento)
-                .WithMany()
-                .HasForeignKey(cm => cm.IdCategoriaEquipamento);
-        });
+        //    entity.HasOne(cm => cm.CategoriaEquipamento)
+        //        .WithMany()
+        //        .HasForeignKey(cm => cm.IdCategoriaEquipamento);
+        //});
 
         OnModelCreatingPartial(modelBuilder);
     }

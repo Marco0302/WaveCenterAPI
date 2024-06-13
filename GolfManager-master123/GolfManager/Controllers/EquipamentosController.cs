@@ -133,7 +133,7 @@ namespace WaveCenter.Controllers
 
             if (marcacao == null)
             {
-                return null; // Ou lançar uma exceção apropriada
+                return NotFound();
             }
 
             var experienciaId = marcacao.IdExperiencia;
@@ -150,10 +150,10 @@ namespace WaveCenter.Controllers
                 .ToListAsync();
 
 
-            if (categoriaEquipamentos == null || categoriaEquipamentos.Count == 0)
-            {
-                return NotFound();
-            }
+            //if (categoriaEquipamentos == null || categoriaEquipamentos.Count == 0)
+            //{
+            //    return NotFound();
+            //}
 
             var quantidadeAtual = await _context.EquipamentosMarcacoes
                 .Where(em => em.Marcacao.Id == marcacaoId && em.Marcacao.IdExperiencia == experienciaId)
@@ -178,14 +178,14 @@ namespace WaveCenter.Controllers
 
         // Buscar equipamentos disponíveis
         [HttpGet("EquipamentosDisponiveis/Categoria/{categoriaEquipamentoId}/Marcacao/{marcacaoId}")]
-        public async Task<ActionResult<IEnumerable<Equipamento>>> GetEquipamentosDisponiveis(int categoriaEquipamentoId, int marcacaoId)
+        public async Task<ActionResult<List<Equipamento>>> GetEquipamentosDisponiveis(int categoriaEquipamentoId, int marcacaoId)
         {
             var marcacaoAtual = await _context.Marcacoes
           .FirstOrDefaultAsync(m => m.Id == marcacaoId);
 
             if (marcacaoAtual == null)
             {
-                return null; // Ou lançar uma exceção apropriada
+                return NotFound();
             }
 
             var equipamentosIndisponiveis = await _context.EquipamentosMarcacoes
@@ -201,10 +201,10 @@ namespace WaveCenter.Controllers
                 .Where(e => e.IdCategoriaEquipamento == categoriaEquipamentoId && !equipamentosIndisponiveis.Contains(e.Id))
                 .ToListAsync();
 
-            if (equipamentosDisponiveis == null || equipamentosDisponiveis.Count == 0)
-            {
-                return NotFound();
-            }
+            //if (equipamentosDisponiveis == null || equipamentosDisponiveis.Count == 0)
+            //{
+            //    return NotFound();
+            //}
 
             return Ok(equipamentosDisponiveis);
         }
@@ -225,7 +225,32 @@ namespace WaveCenter.Controllers
         }
 
 
+        [HttpGet("CategoriasEquipamentoNecessarios/{id}")]
+        public async Task<ActionResult<IEnumerable<EquipamentosExperiencia>>> GetCategoriasEquipamentosNecessarios(int id)
+        {
+            if (_context.EquipamentosExperiencias == null)
+            {
+                return NotFound();
+            }
 
+            var equipamentosExperiencias = await _context.EquipamentosExperiencias.Include(x => x.CategoriaEquipamento).Where(x => x.IdExperiencia == id).ToListAsync();
+
+            return Ok(equipamentosExperiencias);
+        }
+
+        //TODO rever
+        [HttpPost("CategoriasEquipamentoNecessarios")]
+        public async Task<ActionResult<EquipamentosExperiencia>> PostCategoriaEquipamentoNecessario(EquipamentosExperiencia equipamento)
+        {
+            if (_context.EquipamentosExperiencias == null)
+            {
+                return Problem("Entity is null.");
+            }
+            _context.EquipamentosExperiencias.Add(equipamento);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetCategoriasEquipamentosNecessarios", new { id = equipamento.Id }, equipamento);
+        }
 
         private bool EquipamentoExists(int id)
         {
