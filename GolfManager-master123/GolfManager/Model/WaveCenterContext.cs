@@ -32,7 +32,7 @@ public partial class WaveCenterContext : IdentityUserContext<User>
     public virtual DbSet<Marcacao> Marcacoes {  get; set; }
     public virtual DbSet<ClientesMarcacao> ClientesMarcacoes { get; set; }
     public virtual DbSet<EquipamentoMarcacao> EquipamentosMarcacoes { get; set; }
-
+    public virtual DbSet<EquipamentosExperiencia> EquipamentosExperiencias { get; set; }
     public virtual DbSet<PedidoReparacao> PedidoReparacao { get; set; }
     public virtual DbSet<PedidoReparacaoEstados> PedidoReparacaoEstados { get; set; }
 
@@ -112,9 +112,20 @@ public partial class WaveCenterContext : IdentityUserContext<User>
                 .WithMany()
                 .HasForeignKey(cm => cm.IdMarcacao);
 
-            entity.HasOne(cm => cm.Marcacao)
+            entity.HasOne(cm => cm.Equipamento)
                 .WithMany()
                 .HasForeignKey(cm => cm.IdEquipamento);
+        });
+
+        modelBuilder.Entity<EquipamentosExperiencia>(entity =>
+        {
+            entity.HasOne(cm => cm.Experiencia)
+                .WithMany()
+                .HasForeignKey(cm => cm.IdExperiencia);
+
+            entity.HasOne(cm => cm.CategoriaEquipamento)
+                .WithMany()
+                .HasForeignKey(cm => cm.IdCategoriaEquipamento);
         });
 
         OnModelCreatingPartial(modelBuilder);

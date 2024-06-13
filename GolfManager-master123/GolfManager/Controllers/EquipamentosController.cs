@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WaveCenter.Model;
 using Microsoft.AspNetCore.Authorization;
+using WaveCenter.ModelsAPI;
+using WaveCenter.Services;
 
 namespace WaveCenter.Controllers
 {
@@ -15,10 +17,11 @@ namespace WaveCenter.Controllers
     public class EquipamentosController : ControllerBase
     {
         private readonly WaveCenterContext _context;
-
+        private EquipamentosService _service;
         public EquipamentosController(WaveCenterContext context)
         {
             _context = context;
+            _service = new EquipamentosService(context);
         }
 
         [HttpGet]
@@ -116,6 +119,113 @@ namespace WaveCenter.Controllers
 
             return NoContent();
         }
+
+
+        // GET: api/Equipamentos/Marcacao/10
+        [HttpGet("Marcacao/{marcacaoId}")]
+        public async Task<ActionResult<IEnumerable<CategoriaEquipamentoDto>>> GetEquipamentosMarcacao(int marcacaoId)
+        {
+            // Obtendo o IdExperiencia a partir da marcacaoId
+            var marcacao = await _context.Marcacoes
+                .Where(m => m.Id == marcacaoId)
+                .Select(m => new { m.IdExperiencia })
+                .FirstOrDefaultAsync();
+
+            if (marcacao == null)
+            {
+                return null; // Ou lançar uma exceção apropriada
+            }
+
+            var experienciaId = marcacao.IdExperiencia;
+
+            var categoriaEquipamentos = await _context.EquipamentosExperiencias
+                .Where(ee => ee.IdExperiencia == experienciaId)
+                .Include(ee => ee.CategoriaEquipamento)
+                .Select(ee => new CategoriaEquipamentoDto
+                {
+                    Id = ee.CategoriaEquipamento.Id,
+                    Designacao = ee.CategoriaEquipamento.Designacao,
+                    QuantidadeNecessaria = ee.QuantidadeNecessaria
+                })
+                .ToListAsync();
+
+
+            if (categoriaEquipamentos == null || categoriaEquipamentos.Count == 0)
+            {
+                return NotFound();
+            }
+
+            var quantidadeAtual = await _context.EquipamentosMarcacoes
+                .Where(em => em.Marcacao.Id == marcacaoId && em.Marcacao.IdExperiencia == experienciaId)
+                .GroupBy(em => em.Equipamento.CategoriaEquipamento.Id)
+                .Select(g => new
+                {
+                    CategoriaEquipamentoId = g.Key,
+                    QuantidadeAtual = g.Count()
+                })
+                .ToListAsync();
+
+
+            foreach (var categoria in categoriaEquipamentos)
+            {
+                var quantidade = quantidadeAtual.FirstOrDefault(q => q.CategoriaEquipamentoId == categoria.Id);
+                categoria.QuantidadeAtual = quantidade?.QuantidadeAtual ?? 0;
+            }
+
+            return Ok(categoriaEquipamentos);
+        }
+
+
+        // Buscar equipamentos disponíveis
+        [HttpGet("EquipamentosDisponiveis/Categoria/{categoriaEquipamentoId}/Marcacao/{marcacaoId}")]
+        public async Task<ActionResult<IEnumerable<Equipamento>>> GetEquipamentosDisponiveis(int categoriaEquipamentoId, int marcacaoId)
+        {
+            var marcacaoAtual = await _context.Marcacoes
+          .FirstOrDefaultAsync(m => m.Id == marcacaoId);
+
+            if (marcacaoAtual == null)
+            {
+                return null; // Ou lançar uma exceção apropriada
+            }
+
+            var equipamentosIndisponiveis = await _context.EquipamentosMarcacoes
+                .Where(em => em.Equipamento.IdCategoriaEquipamento == categoriaEquipamentoId
+                             && em.Marcacao.Data == marcacaoAtual.Data
+                             && ((em.Marcacao.HoraInicio < marcacaoAtual.HoraFim && em.Marcacao.HoraInicio >= marcacaoAtual.HoraInicio)
+                                 || (em.Marcacao.HoraFim > marcacaoAtual.HoraInicio && em.Marcacao.HoraFim <= marcacaoAtual.HoraFim)))
+                .Select(em => em.Equipamento.Id)
+                .ToListAsync();
+
+
+            var equipamentosDisponiveis = await _context.Equipamentos
+                .Where(e => e.IdCategoriaEquipamento == categoriaEquipamentoId && !equipamentosIndisponiveis.Contains(e.Id))
+                .ToListAsync();
+
+            if (equipamentosDisponiveis == null || equipamentosDisponiveis.Count == 0)
+            {
+                return NotFound();
+            }
+
+            return Ok(equipamentosDisponiveis);
+        }
+
+
+        // Novo endpoint para inserir um equipamento em uma marcação
+        [HttpPost("EquipamentoMarcacao")]
+        public async Task<ActionResult> InsertEquipamentoInMarcacao(int equipamentoId, int marcacaoId)
+        {
+            var result = await _service.InsertEquipamentoInMarcacaoAsync(equipamentoId, marcacaoId);
+
+            if (!result)
+            {
+                return BadRequest("Não foi possível adicionar o equipamento à marcação. Equipamento pode não estar disponível.");
+            }
+
+            return Ok("Equipamento adicionado com sucesso.");
+        }
+
+
+
 
         private bool EquipamentoExists(int id)
         {

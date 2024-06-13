@@ -149,40 +149,117 @@ namespace WaveCenter.Controllers
         }
 
 
-        //MARCACAO -> EQUIPAMENTOS
-        [HttpGet("disponiveis")]
-        public async Task<ActionResult<IEnumerable<Equipamento>>> GetEquipamentosDisponiveis(double horaInicio, double horaFim)
+
+        // Novo endpoint para mudar o estado da marcação
+        [HttpPost("ChangeEstado")]
+        public async Task<ActionResult> ChangeMarcacaoEstados(int marcacaoId, string novoEstado)
         {
-            var equipamentosDisponiveis = await ObterEquipamentosDisponiveis(horaInicio, horaFim);
-            return Ok(equipamentosDisponiveis);
+            var estadosValidos = new List<string> { "Pendente", "Confirmada", "Cancelada", "Completa" };
+
+            if (!estadosValidos.Contains(novoEstado))
+            {
+                return BadRequest("Estado inválido.");
+            }
+
+            var clientesMarcacao = await _context.ClientesMarcacoes
+                .Where(cm => cm.MarcacaoId == marcacaoId)
+                .ToListAsync();
+
+            if (clientesMarcacao == null || !clientesMarcacao.Any())
+            {
+                return BadRequest("Marcação não encontrada.");
+            }
+
+            // Verifica se o estado é "Confirmada"
+            if (novoEstado == "Confirmada")
+            {
+                var marcacao = await _context.Marcacoes.Where(m=>m.Id == clientesMarcacao.FirstOrDefault().MarcacaoId).ToListAsync();
+                if (marcacao == null)
+                {
+                    return BadRequest("Marcação não encontrada.");
+                }
+
+                var experienciaId = marcacao.FirstOrDefault().IdExperiencia;
+
+                var categoriaEquipamentos = await _context.EquipamentosExperiencias
+                    .Where(ee => ee.IdExperiencia == experienciaId)
+                    .Include(ee => ee.CategoriaEquipamento)
+                    .Select(ee => new CategoriaEquipamentoDto
+                    {
+                        Id = ee.CategoriaEquipamento.Id,
+                        Designacao = ee.CategoriaEquipamento.Designacao,
+                        QuantidadeNecessaria = ee.QuantidadeNecessaria
+                    })
+                    .ToListAsync();
+
+                var quantidadeAtual = await _context.EquipamentosMarcacoes
+                    .Where(em => em.Marcacao.Id == marcacaoId)
+                    .GroupBy(em => em.Equipamento.CategoriaEquipamento.Id)
+                    .Select(g => new
+                    {
+                        CategoriaEquipamentoId = g.Key,
+                        QuantidadeAtual = g.Count()
+                    })
+                    .ToListAsync();
+
+                foreach (var categoriaEquipamento in categoriaEquipamentos)
+                {
+                    var quantidade = quantidadeAtual.FirstOrDefault(q => q.CategoriaEquipamentoId == categoriaEquipamento.Id);
+                    categoriaEquipamento.QuantidadeAtual = quantidade?.QuantidadeAtual ?? 0;
+
+                    if (categoriaEquipamento.QuantidadeNecessaria > categoriaEquipamento.QuantidadeAtual)
+                    {
+                        return BadRequest("Não há quantidade suficiente de equipamentos para confirmar a marcação.");
+                    }
+                }
+            }
+
+            foreach (var clienteMarcacao in clientesMarcacao)
+            {
+                clienteMarcacao.Status = novoEstado;
+            }
+
+            await _context.SaveChangesAsync();
+
+            return Ok("Estado da marcação alterado com sucesso.");
         }
 
-        private async Task<List<Equipamento>> ObterEquipamentosDisponiveis(double horaInicio, double horaFim)
-        {
-            // Hora de início e fim recebidas convertidas para TimeSpan
-            TimeSpan inicio = TimeSpan.FromHours(horaInicio);
-            TimeSpan fim = TimeSpan.FromHours(horaFim);
 
-            // Obter todas as marcações que conflitam com o horário fornecido
-            var marcacoesConflitantes = await _context.Marcacoes
-                .Where(m => (m.HoraInicio < fim.TotalHours && m.HoraFim > inicio.TotalHours))
-                .Select(m => m.Id)
-                .ToListAsync();
 
-            // Obter os equipamentos que estão associados às marcações conflitantes
-            var equipamentosIndisponiveis = await _context.EquipamentosMarcacoes
-                .Where(em => marcacoesConflitantes.Contains(em.IdMarcacao))
-                .Select(em => em.IdEquipamento)
-                .Distinct()
-                .ToListAsync();
+        ////MARCACAO -> EQUIPAMENTOS
+        //[HttpGet("disponiveis")]
+        //public async Task<ActionResult<IEnumerable<Equipamento>>> GetEquipamentosDisponiveis(double horaInicio, double horaFim)
+        //{
+        //    var equipamentosDisponiveis = await ObterEquipamentosDisponiveis(horaInicio, horaFim);
+        //    return Ok(equipamentosDisponiveis);
+        //}
 
-            // Obter todos os equipamentos que não estão na lista de indisponíveis
-            var equipamentosDisponiveis = await _context.Equipamentos
-                .Where(e => !equipamentosIndisponiveis.Contains(e.Id))
-                .ToListAsync();
+        //private async Task<List<Equipamento>> ObterEquipamentosDisponiveis(double horaInicio, double horaFim)
+        //{
+        //    // Hora de início e fim recebidas convertidas para TimeSpan
+        //    TimeSpan inicio = TimeSpan.FromHours(horaInicio);
+        //    TimeSpan fim = TimeSpan.FromHours(horaFim);
 
-            return equipamentosDisponiveis;
-        }
+        //    // Obter todas as marcações que conflitam com o horário fornecido
+        //    var marcacoesConflitantes = await _context.Marcacoes
+        //        .Where(m => (m.HoraInicio < fim.TotalHours && m.HoraFim > inicio.TotalHours))
+        //        .Select(m => m.Id)
+        //        .ToListAsync();
+
+        //    // Obter os equipamentos que estão associados às marcações conflitantes
+        //    var equipamentosIndisponiveis = await _context.EquipamentosMarcacoes
+        //        .Where(em => marcacoesConflitantes.Contains(em.IdMarcacao))
+        //        .Select(em => em.IdEquipamento)
+        //        .Distinct()
+        //        .ToListAsync();
+
+        //    // Obter todos os equipamentos que não estão na lista de indisponíveis
+        //    var equipamentosDisponiveis = await _context.Equipamentos
+        //        .Where(e => !equipamentosIndisponiveis.Contains(e.Id))
+        //        .ToListAsync();
+
+        //    return equipamentosDisponiveis;
+        //}
 
 
 
